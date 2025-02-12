@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore;
 using Model.Context;
 using Model.Entities;
 using View.Components;
-using View.Components.Pages;
 
 var assembly = Assembly.GetExecutingAssembly();
 var builder = WebApplication.CreateBuilder(args);
@@ -23,6 +22,7 @@ builder.Services.AddDbContext<OuterRimContext>(options =>
 });
 
 builder.Services.AddScoped<IRepository<Aircraft>, AircraftsRepository>();
+builder.Services.AddScoped<IRepository<AircraftCrew>, AircraftCrewsRepository>();
 
 var app = builder.Build();
 
