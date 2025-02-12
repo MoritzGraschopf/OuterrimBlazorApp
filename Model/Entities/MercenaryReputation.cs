@@ -1,7 +1,9 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Model.Entities;
 
+[Table("MERCENARY_REPUTATIONS")]
 public class MercenaryReputation
 {
     public int SyndicateId { get; set; }

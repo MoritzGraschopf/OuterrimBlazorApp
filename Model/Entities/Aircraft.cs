@@ -18,6 +18,9 @@ public class Aircraft
     [StringLength(200)]
     public string Name { get; set; }
 
-    public int SpezificationId { get; set; }
-    public AircraftSpezification AircraftSpezification { get; set; }
+    public int SpecificationId { get; set; }
+    public AircraftSpecification AircraftSpecification { get; set; }
+
+    public List<AircraftCrew> AircraftCrews { get; set; }
+    public List<Compartment> Compartments { get; set; }
 }

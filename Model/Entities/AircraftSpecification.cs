@@ -3,8 +3,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Model.Entities;
 
-[Table("AIRCRAFT_SPEZIFICATIONS")]
-public class AircraftSpezification
+[Table("AIRCRAFT_SPECIFICATIONS")]
+public class AircraftSpecification
 {
     [Key]
     public int Id { get; set; }
@@ -21,4 +21,6 @@ public class AircraftSpezification
 
     [StringLength(45)]
     public string SpezificationCode { get; set; }
+
+    public List<Aircraft> Aircrafts { get; set; }
 }

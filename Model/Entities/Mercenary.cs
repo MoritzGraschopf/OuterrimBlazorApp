@@ -11,4 +11,7 @@ public class Mercenary
 
     public int BodySkills { get; set; }
     public int CombatSkills { get; set; }
+
+    public List<AircraftCrew> AircraftCrews { get; set; }
+    public List<MercenaryReputation> MercenaryReputations { get; set; }
 }
