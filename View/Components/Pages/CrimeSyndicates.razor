@@ -1,9 +1,116 @@
 @page "/CrimeSyndicates"
-<h3>Crime Syndicates</h3>
+@using Domain.Interfaces
+@using Model.Entities
 
+@inject IRepository<CrimeSyndicate> CrimeSyndicatesRepository
+
+<h1>Crime Syndicates</h1>
+<br>
 <PageTitle>Crime Syndicates</PageTitle>
 
+<h3>Create</h3>
+
+<form id="create">
+    <div class="form-group row my-2">
+        <label for="name_c" class="col-sm-2 col-form-label">Name</label>
+        <div class="col-sm-10">
+            <input type="number" class="form-control" id="name_c" aria-describedby="name_c"/>
+        </div>
+    </div>
+    <div class="form-group row my-2">
+        <label for="location_c" class="col-sm-2 col-form-label">Location</label>
+        <div class="col-sm-10">
+            <input type="number" class="form-control" id="location_c" aria-describedby="location_c"/>
+        </div>
+    </div>
+    <button type="submit" class="btn btn-primary mt-2">Submit</button>
+</form>
+
+<hr/>
+
+<h3>Read</h3>
+<table class="table">
+    <thead>
+    <tr>
+        <th scope="col">Id</th>
+        <th scope="col">Name</th>
+        <th scope="col">Location</th>
+    </tr>
+    </thead>
+    <tbody>
+    @if (CrimeSyndicatesList is not null)
+    {
+        @foreach (var crimeSyndicate in CrimeSyndicatesList)
+        {
+            <tr>
+                <th scope="row">@crimeSyndicate.Id</th>
+                <td>@crimeSyndicate.Name</td>
+                <td>@crimeSyndicate.Location</td>
+            </tr>
+        }
+    }
+    </tbody>
+</table>
+
+<hr>
+
+<h3>Update</h3>
+
+<form id="update">
+    <div class="form-group row my-2">
+        <label for="id_u" class="col-sm-2 col-form-label">Id</label>
+        <div class="col-sm-10">
+            <input type="number" class="form-control" id="id_u" aria-describedby="id_u"/>
+        </div>
+    </div>
+    <div class="form-group row my-2">
+        <label for="name_u" class="col-sm-2 col-form-label">Name</label>
+        <div class="col-sm-10">
+            <input type="number" class="form-control" id="name_u" aria-describedby="name_u"/>
+        </div>
+    </div>
+    <div class="form-group row my-2">
+        <label for="location_u" class="col-sm-2 col-form-label">Location</label>
+        <div class="col-sm-10">
+            <input type="number" class="form-control" id="location_u" aria-describedby="location_u"/>
+        </div>
+    </div>
+    <button type="submit" class="btn btn-primary mt-2">Submit</button>
+</form>
+
+<hr/>
+
+<h3>Delete</h3>
+
+<form id="delete">
+    <div class="form-group row my-2">
+        <label for="id_d" class="col-sm-2 col-form-label">Id</label>
+        <div class="col-sm-10">
+            <input type="number" class="form-control" id="id_d" aria-describedby="id_d"/>
+        </div>
+    </div>
+    <div class="form-group row my-2">
+        <label for="name_d" class="col-sm-2 col-form-label">Name</label>
+        <div class="col-sm-10">
+            <input type="number" class="form-control" id="name_d" aria-describedby="name_d"/>
+        </div>
+    </div>
+    <div class="form-group row my-2">
+        <label for="location_d" class="col-sm-2 col-form-label">Location</label>
+        <div class="col-sm-10">
+            <input type="number" class="form-control" id="location_d" aria-describedby="location_d"/>
+        </div>
+    </div>
+    <button type="submit" class="btn btn-primary mt-2">Submit</button>
+</form>
 
 @code {
+    private List<CrimeSyndicate>? CrimeSyndicatesList { get; set; }
+
+    protected override async void OnInitialized()
+    {
+        await base.OnInitializedAsync();
+        CrimeSyndicatesList = await CrimeSyndicatesRepository.ReadAllAsync();
+    }
 
 }

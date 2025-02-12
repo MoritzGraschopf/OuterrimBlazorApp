@@ -1,9 +1,156 @@
 @page "/Machineries"
-<h3>Machineries</h3>
+@using Domain.Interfaces
+@using Model.Entities
 
+@inject IRepository<Machinery> MachineriesRepository
+
+<h1>Machineries</h1>
+<br>
 <PageTitle>Machineries</PageTitle>
 
+<h3>Create</h3>
+
+<form id="create">
+    <div class="form-group row my-2">
+        <label for="label_c" class="col-sm-2 col-form-label">Label</label>
+        <div class="col-sm-10">
+            <input type="number" class="form-control" id="label_c" aria-describedby="label_c"/>
+        </div>
+    </div>
+    <div class="form-group row my-2">
+        <label for="function_c" class="col-sm-2 col-form-label">Function</label>
+        <div class="col-sm-10">
+            <input type="number" class="form-control" id="function_c" aria-describedby="function_c"/>
+        </div>
+    </div>
+    <div class="form-group row my-2">
+        <label for="compartmentid_c" class="col-sm-2 col-form-label">Compartment Id</label>
+        <div class="col-sm-10">
+            <input type="number" class="form-control" id="compartmentid_c" aria-describedby="compartmentid_c"/>
+        </div>
+    </div>
+    <div class="form-group row my-2">
+        <label for="machinerytype_c" class="col-sm-2 col-form-label">Machinery Type</label>
+        <div class="col-sm-10">
+            <select id="machinerytype_c" class="form-control">
+                <option value="EnergySystem">Energy System</option>
+                <option value="EnviromentalSystem">Enviromental System</option>
+                <option value="Weapon">Weapon</option>
+            </select>
+        </div>
+    </div>
+    <button type="submit" class="btn btn-primary mt-2">Submit</button>
+</form>
+
+<hr/>
+
+<h3>Read</h3>
+<table class="table">
+    <thead>
+    <tr>
+        <th scope="col">Id</th>
+        <th scope="col">Label</th>
+        <th scope="col">Function</th>
+        <th scope="col">Compartment Id</th>
+        <th scope="col">Machinery Type</th>
+    </tr>
+    </thead>
+    <tbody>
+    @if (MachineriesList is not null)
+    {
+        @foreach (var machinery in MachineriesList)
+        {
+            <tr>
+                <th scope="row">@machinery.Id</th>
+                <td>@machinery.Label</td>
+                <td>@machinery.Function</td>
+                <td>@machinery.CompartmentId</td>
+                <td>
+                    @switch (machinery)
+                    {
+                        case EnergySystem:
+                            <span>Energy System</span>
+                            break;
+                        case EnviromentalSystem:
+                            <span>Environmental System</span>
+                            break;
+                        case Weapon:
+                            <span>Weapon</span>
+                            break;
+                        default:
+                            <span>Unknown</span>
+                            break;
+                    }
+                </td>
+            </tr>
+        }
+    }
+    </tbody>
+</table>
+
+<hr>
+
+<h3>Update</h3>
+
+<form id="update">
+    <div class="form-group row my-2">
+        <label for="id_u" class="col-sm-2 col-form-label">Id</label>
+        <div class="col-sm-10">
+            <input type="number" class="form-control" id="id_u" aria-describedby="id_u"/>
+        </div>
+    </div>
+    <div class="form-group row my-2">
+        <label for="label_u" class="col-sm-2 col-form-label">Label</label>
+        <div class="col-sm-10">
+            <input type="number" class="form-control" id="label_u" aria-describedby="label_u"/>
+        </div>
+    </div>
+    <div class="form-group row my-2">
+        <label for="function_u" class="col-sm-2 col-form-label">Function</label>
+        <div class="col-sm-10">
+            <input type="number" class="form-control" id="function_u" aria-describedby="function_u"/>
+        </div>
+    </div>
+    <div class="form-group row my-2">
+        <label for="compartmentid_u" class="col-sm-2 col-form-label">Compartment Id</label>
+        <div class="col-sm-10">
+            <input type="number" class="form-control" id="compartmentid_u" aria-describedby="compartmentid_u"/>
+        </div>
+    </div>
+    <div class="form-group row my-2">
+        <label for="machinerytype_u" class="col-sm-2 col-form-label">Machinery Type</label>
+        <div class="col-sm-10">
+            <select id="machinerytype_u" class="form-control">
+                <option value="EnergySystem">Energy System</option>
+                <option value="EnviromentalSystem">Enviromental System</option>
+                <option value="Weapon">Weapon</option>
+            </select>
+        </div>
+    </div>
+    <button type="submit" class="btn btn-primary mt-2">Submit</button>
+</form>
+
+<hr/>
+
+<h3>Delete</h3>
+
+<form id="delete">
+    <div class="form-group row my-2">
+        <label for="id_d" class="col-sm-2 col-form-label">Id</label>
+        <div class="col-sm-10">
+            <input type="number" class="form-control" id="id_d" aria-describedby="id_d"/>
+        </div>
+    </div>
+    <button type="submit" class="btn btn-primary mt-2">Submit</button>
+</form>
 
 @code {
+    private List<Machinery>? MachineriesList { get; set; }
+
+    protected override async void OnInitialized()
+    {
+        await base.OnInitializedAsync();
+        MachineriesList = await MachineriesRepository.ReadAllAsync();
+    }
 
 }
