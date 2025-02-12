@@ -11,7 +11,7 @@ using Model.Context;
 namespace View.Migrations
 {
     [DbContext(typeof(OuterRimContext))]
-    [Migration("20250212125448_Initial")]
+    [Migration("20250212133820_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
