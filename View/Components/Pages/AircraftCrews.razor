@@ -1,5 +1,9 @@
 @page "/AircraftCrews"
+@using Domain.Interfaces
 @using Model.Entities
+
+@inject IRepository<AircraftCrew> AircraftCrewRepository
+
 <h1>Aircraft Crews</h1>
 <br>
 <PageTitle>Aircraft Crews</PageTitle>
@@ -40,13 +44,16 @@
     </tr>
     </thead>
     <tbody>
-    @foreach (var aircraftCrew in _aircraftCrews)
+    @if (AircraftCrewList is not null)
     {
-        <tr>
-            <td>@aircraftCrew.AircraftId</td>
-            <td>@aircraftCrew.MercenaryId</td>
-            <td>@aircraftCrew.JoinedAt.ToString("dd.MM.yyyy")</td>
-        </tr>
+        @foreach (var aircraftCrew in AircraftCrewList)
+        {
+            <tr>
+                <td>@aircraftCrew.AircraftId</td>
+                <td>@aircraftCrew.MercenaryId</td>
+                <td>@aircraftCrew.JoinedAt.ToString("dd.MM.yyyy")</td>
+            </tr>
+        }
     }
     </tbody>
 </table>
@@ -98,10 +105,12 @@
 </form>
 
 @code {
+    private List<AircraftCrew>? AircraftCrewList { get; set; }
 
-    List<AircraftCrew> _aircraftCrews =
-    [
-        new AircraftCrew(1, 1, new DateTime(2025, 1, 15))
-    ];
+    protected override async void OnInitialized()
+    {
+        await base.OnInitializedAsync();
+        AircraftCrewList = await AircraftCrewRepository.ReadAllAsync();
+    }
 
 }
