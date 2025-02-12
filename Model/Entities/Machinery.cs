@@ -14,8 +14,8 @@ public class Machinery
 
     public int CompartmentId { get; set; }
     public Compartment Compartment { get; set; }
-
-    public Weapon Weapon {get; set;}
-    public EnergySystem EnergySystem { get; set; }
-    public EnviromentalSystem EnviromentalSystem { get; set; }
 }
+
+public class EnergySystem : Machinery { }
+public class EnviromentalSystem : Machinery { }
+public class Weapon : Machinery { }

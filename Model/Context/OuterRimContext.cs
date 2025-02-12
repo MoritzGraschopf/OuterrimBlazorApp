@@ -19,6 +19,12 @@ public class OuterRimContext(DbContextOptions<OuterRimContext> options) : DbCont
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
+        builder.Entity<Machinery>()
+            .HasDiscriminator<string>("MachineryType")
+            .HasValue<EnergySystem>("EnergySystem")
+            .HasValue<EnviromentalSystem>("EnviromentalSystem")
+            .HasValue<Weapon>("Weapon");
+
         builder.Entity<Aircraft>()
             .HasOne<AircraftSpecification>(a => a.AircraftSpecification)
             .WithMany(a => a.Aircrafts)
@@ -52,31 +58,11 @@ public class OuterRimContext(DbContextOptions<OuterRimContext> options) : DbCont
             .WithMany(c => c.Machineries)
             .HasForeignKey(m => m.CompartmentId);
 
-        builder.Entity<Weapon>()
-            .HasOne<Machinery>(w => w.Machinery)
-            .WithOne(m => m.Weapon)
-            .HasForeignKey<Weapon>(w => w.MachineryId);
-        builder.Entity<EnergySystem>()
-            .HasOne<Machinery>(es => es.Machinery)
-            .WithOne(m => m.EnergySystem)
-            .HasForeignKey<EnergySystem>(es => es.MachineryId);
-        builder.Entity<EnviromentalSystem>()
-            .HasOne<Machinery>(es => es.Machinery)
-            .WithOne(m => m.EnviromentalSystem)
-            .HasForeignKey<EnviromentalSystem>(es => es.MachineryId);
-
-
 
         builder.Entity<AircraftCrew>()
             .HasKey(ac => new { ac.AircraftId, ac.MercenaryId });
         builder.Entity<MercenaryReputation>()
             .HasKey(mr => new { mr.SyndicateId, mr.MercenaryId });
-        builder.Entity<EnergySystem>()
-            .HasKey(es => es.MachineryId);
-        builder.Entity<EnviromentalSystem>()
-            .HasKey(es => es.MachineryId);
-        builder.Entity<Weapon>()
-            .HasKey(w => w.MachineryId);
 
         base.OnModelCreating(builder);
     }
