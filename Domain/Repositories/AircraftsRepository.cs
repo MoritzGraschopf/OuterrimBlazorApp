@@ -6,6 +6,5 @@ namespace Domain.Repositories;
 public class AircraftsRepository(OuterRimContext context) : ARepository<Aircraft>(context)
 {
 
-    
 }
 
