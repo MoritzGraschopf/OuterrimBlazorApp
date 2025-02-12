@@ -1,182 +1,60 @@
+using System.Linq.Expressions;
 using Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Model.Context;
 
 namespace Domain.Repositories;
 
-public class ARepository<TEntity> : IRepository<TEntity> where TEntity : class
+public abstract class ARepository<TEntity>(OuterRimContext context) : IRepository<TEntity> 
+    where TEntity : class
 {
-    protected readonly OuterRimContext Context;
-    protected readonly DbSet<TEntity> Table;
-
-    protected ARepository(OuterRimContext context)
+    public virtual async Task<TEntity> CreateAsync(TEntity t)
     {
-        this.Context = context;
-        Table = context.Set<TEntity>();
+        await context.Set<TEntity>().AddAsync(t);
+        await context.SaveChangesAsync();
+        return t;
     }
+
+    public virtual async Task<List<TEntity>> CreateRangeAsync(List<TEntity> list)
+    {
+        await context.Set<TEntity>().AddRangeAsync();
+        await context.SaveChangesAsync();
+        return list;
+    }
+
+    public virtual async Task UpdateAsync(int id, TEntity t)
+    {
+        var existingEntity = await context.Set<TEntity>().FindAsync(id) ?? throw new KeyNotFoundException("Entity not found");
+        context.Entry(existingEntity).CurrentValues.SetValues(t);
+        await context.SaveChangesAsync();
+    }
+
+    public virtual async Task UpdateRangeAsync(List<TEntity> list)
+    {
+        context.Set<TEntity>().UpdateRange(list);
+        await context.SaveChangesAsync();
+    }
+
+    public virtual async Task<TEntity?> ReadAsync(int id) => await context.Set<TEntity>().FindAsync(id);
     
-    public async Task<IEnumerable<TEntity>?> GetAllAsync()
-    {
-        return await Table.ToListAsync();
-    }
+    public virtual async Task<List<TEntity>> ReadAsync(Expression<Func<TEntity, bool>> filter) =>
+        await context.Set<TEntity>().Where(filter).ToListAsync();
 
-    public async Task<TEntity?> GetByIdAsync(int id)
-    {
-        ArgumentNullException.ThrowIfNull(id);
-        return await Table.FindAsync(id);
-    }
+    public virtual async Task<List<TEntity>> ReadAsync(int start, int count) =>
+        await context.Set<TEntity>().Skip(start).Take(count).ToListAsync();
 
-    public async Task<TEntity?> AddAsync(TEntity entity)
-    {
-        ArgumentNullException.ThrowIfNull(entity);
-        var keyProperty = Context.Model.FindEntityType(typeof(TEntity))!
-            .FindPrimaryKey()!
-            .Properties[0];
-        var keyValue = keyProperty.PropertyInfo!.GetValue(entity);
-        
-        var existingEntity = await Table.FindAsync(keyValue);
-
-        if (existingEntity != null)
-            return null;
-        
-        await Table.AddAsync(entity);
-        await Context.SaveChangesAsync();
-        return entity;
-    }
-
-    public async Task<IEnumerable<TEntity>?> CreateRangeAsync(IEnumerable<TEntity> entities)
-    {
-        ArgumentNullException.ThrowIfNull(entities);
-
-        var entityType = Context.Model.FindEntityType(typeof(TEntity));
-        var keyProperty = entityType.FindPrimaryKey().Properties.First();
-
-        var addedEntities = new List<TEntity>();
-
-        foreach (var entity in entities)
-        {
-            var keyValue = keyProperty.PropertyInfo.GetValue(entity);
-
-            var existingEntity = await Table.FindAsync(keyValue);
-
-            if (existingEntity != null) continue;
-            await Table.AddAsync(entity);
-            addedEntities.Add(entity);
-        }
-
-        if (addedEntities.Count == 0)
-        {
-            return null;
-        }
-
-        await Context.SaveChangesAsync();
-
-        return addedEntities;
-    }
-
-
-    public async Task<TEntity> UpSertAsync(TEntity entity)
-    {
-        ArgumentNullException.ThrowIfNull(entity);
-        
-        var keyProperty = Context.Model.FindEntityType(typeof(TEntity))!
-            .FindPrimaryKey()!
-            .Properties
-            .First();
-        var keyValue = keyProperty.PropertyInfo!.GetValue(entity);
-        
-        var existingEntity = await Table.FindAsync(keyValue);
-
-        if (existingEntity == null)
-            await Table.AddAsync(entity);
-        else
-            Context.Entry(existingEntity).CurrentValues.SetValues(entity);
-
-        await Context.SaveChangesAsync();
-
-        return entity;
-    }
-
-    public async Task<IEnumerable<TEntity>> UpSertRangeAsync(IEnumerable<TEntity> entities)
-    {
-        ArgumentNullException.ThrowIfNull(entities);
-        
-        var entityType = Context.Model.FindEntityType(typeof(TEntity));
-        var keyProperty = entityType!.FindPrimaryKey()!.Properties[0];
-
-        foreach (var entity in entities)
-        {
-            var keyValue = keyProperty.PropertyInfo!.GetValue(entity);
-
-            var existingEntity = await Table.FindAsync(keyValue);
-
-            if (existingEntity == null)
-                await Table.AddAsync(entity);
-            else
-                Context.Entry(existingEntity).CurrentValues.SetValues(entity);
-        }
-
-        await Context.SaveChangesAsync();
-
-        return entities;
-    }
-
-    public async Task<TEntity?> DeleteAsyncById(int id)
-    {
-        ArgumentNullException.ThrowIfNull(id);
-        
-        var entity = await Table.FindAsync(id);
-        if (entity is null) return null;
-        
-        Table.Remove(entity);
-        await Context.SaveChangesAsync();
-        return entity;
-    }
-
-    public async Task<TEntity?> DeleteAsync(TEntity entity)
-    {
-        ArgumentNullException.ThrowIfNull(entity);
-
-        var entityType = Context.Model.FindEntityType(typeof(TEntity));
-        var keyProperty = entityType!.FindPrimaryKey()!.Properties[0];
-
-        var keyValue = keyProperty.PropertyInfo!.GetValue(entity);
-        var existingEntity = await Table.FindAsync(keyValue);
-
-        if (existingEntity == null) return null;
-        
-        Table.Remove(existingEntity);
-        await Context.SaveChangesAsync();
-        return entity;
-    }
-
-    public async Task<IEnumerable<TEntity>?> DeleteRangeAsync(IEnumerable<TEntity> entities)
-    {
-        ArgumentNullException.ThrowIfNull(entities);
-
-        var entityType = Context.Model.FindEntityType(typeof(TEntity));
-        var keyProperty = entityType!.FindPrimaryKey()!.Properties[0];
-        var deletedEntities = new List<TEntity>();
-
-        foreach (var entity in entities)
-        {
-            var keyValue = keyProperty.PropertyInfo!.GetValue(entity);
-            var existingEntity = await Table.FindAsync(keyValue);
-            
-            if (existingEntity == null) continue;
-            
-            deletedEntities.Add(existingEntity);
-            Table.Remove(existingEntity);
-        }
-        await Context.SaveChangesAsync();
-
-        return deletedEntities;
-    }
+    public virtual async Task<List<TEntity>> ReadAllAsync() => await context.Set<TEntity>().ToListAsync();
     
-    public async Task<IEnumerable<TEntity>?> GetPagedAsync(int page, int pageSize)
+    public virtual async Task DeleteAsync(int id, TEntity t)
     {
-        return await Table.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+        var existingEntity = await context.Set<TEntity>().FindAsync(id) ?? throw new KeyNotFoundException("Entity not found");
+        context.Set<TEntity>().Remove(existingEntity);
+        await context.SaveChangesAsync();
     }
-
-    
+    public async Task DeleteRangeAsync(List<TEntity> list)
+    {
+        context.Set<TEntity>().RemoveRange(list);
+        await context.SaveChangesAsync();
+    }
 }
+
