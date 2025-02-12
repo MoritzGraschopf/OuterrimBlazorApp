@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Model;
+namespace Model.Entities;
 
 [Table("AIRCRAFT_SPEZIFICATIONS")]
 public class AircraftSpezification
