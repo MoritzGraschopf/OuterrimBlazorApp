@@ -1,5 +1,9 @@
 @page "/AircraftSpecifications"
+@using Domain.Interfaces
 @using Model.Entities
+
+@inject IRepository<AircraftSpecification> AirAircraftSpecificationRepository
+
 <h3>Aircraft Specifications</h3>
 <br>
 
@@ -63,26 +67,32 @@
     </tr>
     </thead>
     <tbody>
-    @foreach (var aircraftSpecification in _aircraftSpecifications)
+    @if (AircraftSpecificationsList is not null)
     {
-        <tr>
-            <th scope="row">@aircraftSpecification.Id</th>
-            <td>@aircraftSpecification.Structure</td>
-            <td>@aircraftSpecification.FuelTankCapacity</td>
-            <td>@aircraftSpecification.MinSpeed</td>
-            <td>@aircraftSpecification.MaxSpeed</td>
-            <td>@aircraftSpecification.MaxAltitude</td>
-            <td>@aircraftSpecification.SpecificationCode</td>
-        </tr>
+        @foreach (var aircraftSpecification in AircraftSpecificationsList)
+        {
+            <tr>
+                <th scope="row">@aircraftSpecification.Id</th>
+                <td>@aircraftSpecification.Structure</td>
+                <td>@aircraftSpecification.FuelTankCapacity</td>
+                <td>@aircraftSpecification.MinSpeed</td>
+                <td>@aircraftSpecification.MaxSpeed</td>
+                <td>@aircraftSpecification.MaxAltitude</td>
+                <td>@aircraftSpecification.SpecificationCode</td>
+            </tr>
+        }
     }
     </tbody>
 </table>
 
 @code {
 
-    List<AircraftSpecification> _aircraftSpecifications =
-    [
-        new AircraftSpecification(1, 100 , 5000, 200, 900, 12000, "SPC-001")
-    ];
+    private List<AircraftSpecification>? AircraftSpecificationsList { get; set; }
+
+    protected override async void OnInitialized()
+    {
+        await base.OnInitializedAsync();
+        AircraftSpecificationsList = await AirAircraftSpecificationRepository.ReadAllAsync();
+    }
 
 }
