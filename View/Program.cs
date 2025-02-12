@@ -24,6 +24,11 @@ builder.Services.AddDbContext<OuterRimContext>(options =>
 builder.Services.AddScoped<IRepository<Aircraft>, AircraftsRepository>();
 builder.Services.AddScoped<IRepository<AircraftCrew>, AircraftCrewsRepository>();
 builder.Services.AddScoped<IRepository<AircraftSpecification>, AircraftSpecificationsRepository>();
+builder.Services.AddScoped<IRepository<Compartment>, CompartmentsRepository>();
+builder.Services.AddScoped<IRepository<CrimeSyndicate>, CrimeSyndicatesRepository>();
+builder.Services.AddScoped<IRepository<Machinery>, MachineriesRepository>();
+builder.Services.AddScoped<IRepository<Mercenary>, MercenariesRepository>();
+builder.Services.AddScoped<IRepository<MercenaryReputation>, MercenaryReputationsRepository>();
 
 var app = builder.Build();
 
