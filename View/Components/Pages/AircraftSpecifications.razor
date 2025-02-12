@@ -1,8 +1,88 @@
 @page "/AircraftSpecifications"
+@using Model.Entities
 <h3>Aircraft Specifications</h3>
+<br>
 
 <PageTitle>Aircraft Specifications</PageTitle>
 
+<h3>Create</h3>
+
+<form id="create">
+    <div class="form-group row my-2">
+        <label for="structure_c" class="col-sm-2 col-form-label">Structure</label>
+        <div class="col-sm-10">
+            <input type="number" class="form-control" id="structure_c" aria-describedby="structure_c"/>
+        </div>
+    </div>
+    <div class="form-group row my-2">
+        <label for="fueltankcapacity_c" class="col-sm-2 col-form-label">Fuel Tank Capacity</label>
+        <div class="col-sm-10">
+            <input type="number" class="form-control" id="fueltankcapacity_c" aria-describedby="fueltankcapacity_c"/>
+        </div>
+    </div>
+    <div class="form-group row my-2">
+        <label for="minspeed_c" class="col-sm-2 col-form-label">Min Speed</label>
+        <div class="col-sm-10">
+            <input type="number" class="form-control" id="minspeed_c" aria-describedby="minspeed_c"/>
+        </div>
+    </div>
+    <div class="form-group row my-2">
+        <label for="maxspeed_c" class="col-sm-2 col-form-label">Max Speed</label>
+        <div class="col-sm-10">
+            <input type="number" class="form-control" id="maxspeed_c" aria-describedby="maxspeed_c"/>
+        </div>
+    </div>
+    <div class="form-group row my-2">
+        <label for="maxaltitude_c" class="col-sm-2 col-form-label">Max Altitude</label>
+        <div class="col-sm-10">
+            <input type="number" class="form-control" id="maxaltitude_c" aria-describedby="maxaltitude_c"/>
+        </div>
+    </div>
+    <div class="form-group row my-2">
+        <label for="specificationcode_c" class="col-sm-2 col-form-label">Specification Code</label>
+        <div class="col-sm-10">
+            <input type="text" class="form-control" id="specificationcode_c" aria-describedby="specificationcode_c"/>
+        </div>
+    </div>
+    <button type="submit" class="btn btn-primary mt-2">Submit</button>
+</form>
+
+<hr>
+
+<h3>Read</h3>
+<table class="table">
+    <thead>
+    <tr>
+        <th scope="col">Id</th>
+        <th scope="col">Structure</th>
+        <th scope="col">Fuel Tank Capacity</th>
+        <th scope="col">Min Speed</th>
+        <th scope="col">Max Speed</th>
+        <th scope="col">Max Altitude</th>
+        <th scope="col">Specification Code</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var aircraftSpecification in _aircraftSpecifications)
+    {
+        <tr>
+            <th scope="row">@aircraftSpecification.Id</th>
+            <td>@aircraftSpecification.Structure</td>
+            <td>@aircraftSpecification.FuelTankCapacity</td>
+            <td>@aircraftSpecification.MinSpeed</td>
+            <td>@aircraftSpecification.MaxSpeed</td>
+            <td>@aircraftSpecification.MaxAltitude</td>
+            <td>@aircraftSpecification.SpecificationCode</td>
+        </tr>
+    }
+    </tbody>
+</table>
+
 @code {
+
+    List<AircraftSpecification> _aircraftSpecifications =
+    [
+        new AircraftSpecification(1, 100 , 5000, 200, 900, 12000, "SPC-001")
+    ];
 
 }

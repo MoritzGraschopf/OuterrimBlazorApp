@@ -1,7 +1,11 @@
 using System.Reflection;
+using Domain.Interfaces;
+using Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Model.Context;
+using Model.Entities;
 using View.Components;
+using View.Components.Pages;
 
 var assembly = Assembly.GetExecutingAssembly();
 var builder = WebApplication.CreateBuilder(args);
@@ -17,6 +21,8 @@ builder.Services.AddDbContext<OuterRimContext>(options =>
         sqlOptions.MigrationsAssembly(assembly.FullName);
     });
 });
+
+builder.Services.AddScoped<IRepository<Aircraft>, AircraftsRepository>();
 
 var app = builder.Build();
 

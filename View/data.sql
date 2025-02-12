@@ -1,5 +1,5 @@
 -- Beispiel-Daten für AIRCRAFT_SPECIFICATIONS
-INSERT INTO AIRCRAFT_SPECIFICATIONS (Structure, FuelTankCapacity, MinSpeed, MaxSpeed, MaxAltitude, SpezificationCode)
+INSERT INTO AIRCRAFT_SPECIFICATIONS (Structure, FuelTankCapacity, MinSpeed, MaxSpeed, MaxAltitude, SpecificationCode)
 VALUES
     (100, 5000, 200, 900, 12000, 'SPC-001'),
     (120, 6000, 250, 1000, 15000, 'SPC-002');

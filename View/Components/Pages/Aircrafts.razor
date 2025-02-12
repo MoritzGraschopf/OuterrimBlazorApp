@@ -1,8 +1,147 @@
 @page "/Aircrafts"
-<h3>Aircrafts</h3>
+@using Domain.Interfaces
+@using Model.Entities
+
+@inject IRepository<Aircraft> AircraftsRepository
+
+<h1>Aircrafts</h1>
+<br>
 
 <PageTitle>Aircrafts</PageTitle>
 
+<h3>Create</h3>
+
+<form id="create">
+    <div class="form-group row my-2">
+        <label for="fuel_c" class="col-sm-2 col-form-label">Fuel</label>
+        <div class="col-sm-10">
+            <input type="number" class="form-control" id="fuel_c" aria-describedby="fuel_c"/>
+        </div>
+    </div>
+    <div class="form-group row my-2">
+        <label for="speed_c" class="col-sm-2 col-form-label">Speed</label>
+        <div class="col-sm-10">
+            <input type="number" class="form-control" id="speed_c" aria-describedby="speed_c"/>
+        </div>
+    </div>
+    <div class="form-group row my-2">
+        <label for="altitude_c" class="col-sm-2 col-form-label">Altitude</label>
+        <div class="col-sm-10">
+            <input type="number" class="form-control" id="altitude_c" aria-describedby="altitude_c"/>
+        </div>
+    </div>
+    <div class="form-group row my-2">
+        <label for="name_c" class="col-sm-2 col-form-label">Name</label>
+        <div class="col-sm-10">
+            <input type="text" class="form-control" id="name_c" aria-describedby="name_c"/>
+        </div>
+    </div>
+    <div class="form-group row my-2">
+        <label for="specificationId_c" class="col-sm-2 col-form-label">Specification Id</label>
+        <div class="col-sm-10">
+            <input type="number" class="form-control" id="specificationId_c" aria-describedby="specificationId_c"/>
+        </div>
+    </div>
+    <button type="submit" class="btn btn-primary mt-2">Submit</button>
+</form>
+
+<hr/>
+
+<h3>Read</h3>
+<table class="table">
+    <thead>
+    <tr>
+        <th scope="col">Id</th>
+        <th scope="col">Fuel</th>
+        <th scope="col">Speed</th>
+        <th scope="col">Altitude</th>
+        <th scope="col">Name</th>
+        <th scope="col">Specification Id</th>
+    </tr>
+    </thead>
+    <tbody>
+    @if (AircraftsList is not null)
+    {
+        @foreach (var aircraft in AircraftsList)
+        {
+            <tr>
+                <th scope="row">@aircraft.Id</th>
+                <td>@aircraft.Fuel</td>
+                <td>@aircraft.Speed</td>
+                <td>@aircraft.Altitude</td>
+                <td>@aircraft.Name</td>
+                <td>@aircraft.SpecificationId</td>
+            </tr>
+        }
+    }
+    </tbody>
+</table>
+
+<hr/>
+
+<h3>Update</h3>
+
+<form id="update">
+    <div class="form-group row my-2">
+        <label for="id_u" class="col-sm-2 col-form-label">Id</label>
+        <div class="col-sm-10">
+            <input type="number" class="form-control" id="id_u" aria-describedby="id_u"/>
+        </div>
+    </div>
+    <div class="form-group row my-2">
+        <label for="fuel_u" class="col-sm-2 col-form-label">Fuel</label>
+        <div class="col-sm-10">
+            <input type="number" class="form-control" id="fuel_u" aria-describedby="fuel_u"/>
+        </div>
+    </div>
+    <div class="form-group row my-2">
+        <label for="speed_u" class="col-sm-2 col-form-label">Speed</label>
+        <div class="col-sm-10">
+            <input type="number" class="form-control" id="speed_u" aria-describedby="speed_u"/>
+        </div>
+    </div>
+    <div class="form-group row my-2">
+        <label for="altitude_u" class="col-sm-2 col-form-label">Altitude</label>
+        <div class="col-sm-10">
+            <input type="number" class="form-control" id="altitude_u" aria-describedby="altitude_u"/>
+        </div>
+    </div>
+    <div class="form-group row my-2">
+        <label for="name_u" class="col-sm-2 col-form-label">Name</label>
+        <div class="col-sm-10">
+            <input type="text" class="form-control" id="name_u" aria-describedby="name_u"/>
+        </div>
+    </div>
+    <div class="form-group row my-2">
+        <label for="specificationId_u" class="col-sm-2 col-form-label">Specification Id</label>
+        <div class="col-sm-10">
+            <input type="number" class="form-control" id="specificationId_u" aria-describedby="specificationId_u"/>
+        </div>
+    </div>
+    <button type="submit" class="btn btn-primary mt-2">Submit</button>
+</form>
+
+<hr>
+
+<h3>Delete</h3>
+
+<form id="delete">
+    <div class="form-group row my-2">
+        <label for="id_d" class="col-sm-2 col-form-label">Id</label>
+        <div class="col-sm-10">
+            <input type="number" class="form-control" id="id_d" aria-describedby="id_d"/>
+        </div>
+    </div>
+    <button type="submit" class="btn btn-primary my-2">Submit</button>
+</form>
+
 @code {
+    private List<Aircraft>? AircraftsList { get; set; }
+
+    protected override async void OnInitialized()
+    {
+        await base.OnInitializedAsync();
+        AircraftsList = await AircraftsRepository.ReadAllAsync();
+    }
 
 }
