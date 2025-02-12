@@ -11,35 +11,35 @@
 
 <h3>Create</h3>
 
-<form id="create">
+<form id="create" @onsubmit="async (e) => { await AddBook(); }">
     <div class="form-group row my-2">
         <label for="fuel_c" class="col-sm-2 col-form-label">Fuel</label>
         <div class="col-sm-10">
-            <input type="number" class="form-control" id="fuel_c" aria-describedby="fuel_c"/>
+            <input type="number" class="form-control" id="fuel_c" aria-describedby="fuel_c" @bind-value="NewAircraft.Fuel"/>
         </div>
     </div>
     <div class="form-group row my-2">
         <label for="speed_c" class="col-sm-2 col-form-label">Speed</label>
         <div class="col-sm-10">
-            <input type="number" class="form-control" id="speed_c" aria-describedby="speed_c"/>
+            <input type="number" class="form-control" id="speed_c" aria-describedby="speed_c" @bind-value="NewAircraft.Speed"/>
         </div>
     </div>
     <div class="form-group row my-2">
         <label for="altitude_c" class="col-sm-2 col-form-label">Altitude</label>
         <div class="col-sm-10">
-            <input type="number" class="form-control" id="altitude_c" aria-describedby="altitude_c"/>
+            <input type="number" class="form-control" id="altitude_c" aria-describedby="altitude_c" @bind-value="NewAircraft.Altitude"/>
         </div>
     </div>
     <div class="form-group row my-2">
         <label for="name_c" class="col-sm-2 col-form-label">Name</label>
         <div class="col-sm-10">
-            <input type="text" class="form-control" id="name_c" aria-describedby="name_c"/>
+            <input type="text" class="form-control" id="name_c" aria-describedby="name_c" @bind-value="NewAircraft.Name"/>
         </div>
     </div>
     <div class="form-group row my-2">
         <label for="specificationId_c" class="col-sm-2 col-form-label">Specification Id</label>
         <div class="col-sm-10">
-            <input type="number" class="form-control" id="specificationId_c" aria-describedby="specificationId_c"/>
+            <input type="number" class="form-control" id="specificationId_c" aria-describedby="specificationId_c" @bind-value="NewAircraft.SpecificationId"/>
         </div>
     </div>
     <button type="submit" class="btn btn-primary mt-2">Submit</button>
@@ -137,6 +137,7 @@
 
 @code {
     private List<Aircraft>? AircraftsList { get; set; }
+    private Aircraft NewAircraft = new Aircraft();
 
     protected override async void OnInitialized()
     {
@@ -144,4 +145,27 @@
         AircraftsList = await AircraftsRepository.ReadAllAsync();
     }
 
+    private async Task AddBook()
+    {
+        try
+        {
+            await AircraftsRepository.CreateAsync(NewAircraft);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Fehler: {ex.Message}");
+        }
+        AircraftsList = await AircraftsRepository.ReadAllAsync(); // Liste aktualisieren
+        NewAircraft = new Aircraft(); // Formular zurücksetzen
+
+        if (OnBookCreated.HasDelegate)
+        {
+            await OnBookCreated.InvokeAsync();
+        }
+
+        StateHasChanged();
+    }
+
+    [Parameter]
+    public EventCallback OnBookCreated { get; set; }
 }

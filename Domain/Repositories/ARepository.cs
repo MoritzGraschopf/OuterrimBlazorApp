@@ -17,7 +17,7 @@ public abstract class ARepository<TEntity>(OuterRimContext context) : IRepositor
 
     public virtual async Task<List<TEntity>> CreateRangeAsync(List<TEntity> list)
     {
-        await context.Set<TEntity>().AddRangeAsync();
+        await context.Set<TEntity>().AddRangeAsync(list);
         await context.SaveChangesAsync();
         return list;
     }
