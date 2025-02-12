@@ -4,3 +4,5 @@ obj/
 riderModule.iml
 /_ReSharper.Caches/
 /.idea
+View/OuterRim.db-shm
+View/OuterRim.db-wal
