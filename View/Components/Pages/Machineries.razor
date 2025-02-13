@@ -1,8 +1,10 @@
 @page "/Machineries"
+@rendermode InteractiveServer
 @using Domain.Interfaces
 @using Model.Entities
 
 @inject IRepository<Machinery> MachineriesRepository
+@inject IRepository<Compartment> CompartmentsRepository
 
 <h1>Machineries</h1>
 <br>
@@ -14,33 +16,39 @@
     <div class="form-group row my-2">
         <label for="label_c" class="col-sm-2 col-form-label">Label</label>
         <div class="col-sm-10">
-            <input type="number" class="form-control" id="label_c" aria-describedby="label_c"/>
+            <input type="text" class="form-control" id="label_c" aria-describedby="label_c" @bind-value="_newMachinery.Label"/>
         </div>
     </div>
     <div class="form-group row my-2">
         <label for="function_c" class="col-sm-2 col-form-label">Function</label>
         <div class="col-sm-10">
-            <input type="number" class="form-control" id="function_c" aria-describedby="function_c"/>
+            <input type="text" class="form-control" id="function_c" aria-describedby="function_c" @bind-value="_newMachinery.Function"/>
         </div>
     </div>
     <div class="form-group row my-2">
         <label for="compartmentid_c" class="col-sm-2 col-form-label">Compartment Id</label>
         <div class="col-sm-10">
-            <input type="number" class="form-control" id="compartmentid_c" aria-describedby="compartmentid_c"/>
+            <input type="number" class="form-control" id="compartmentid_c" aria-describedby="compartmentid_c" @bind-value="_newMachinery.CompartmentId"/>
         </div>
     </div>
     <div class="form-group row my-2">
         <label for="machinerytype_c" class="col-sm-2 col-form-label">Machinery Type</label>
         <div class="col-sm-10">
-            <select id="machinerytype_c" class="form-control">
+            <select id="machinerytype_c" class="form-control" @bind="_newMachineryType">
                 <option value="EnergySystem">Energy System</option>
                 <option value="EnviromentalSystem">Enviromental System</option>
                 <option value="Weapon">Weapon</option>
             </select>
         </div>
     </div>
-    <button type="submit" class="btn btn-primary mt-2">Submit</button>
 </form>
+<button type="submit" class="btn btn-primary mt-2" @onclick="async () => await AddMachinery()">Submit</button>
+@if (_createError != "")
+{
+    <div class="alert alert-danger my-2" role="alert">
+        @_createError
+    </div>
+}
 
 <hr/>
 
@@ -96,39 +104,35 @@
     <div class="form-group row my-2">
         <label for="id_u" class="col-sm-2 col-form-label">Id</label>
         <div class="col-sm-10">
-            <input type="number" class="form-control" id="id_u" aria-describedby="id_u"/>
+            <input type="number" class="form-control" id="id_u" aria-describedby="id_u" @bind-value="_updateId"/>
         </div>
     </div>
     <div class="form-group row my-2">
         <label for="label_u" class="col-sm-2 col-form-label">Label</label>
         <div class="col-sm-10">
-            <input type="number" class="form-control" id="label_u" aria-describedby="label_u"/>
+            <input type="text" class="form-control" id="label_u" aria-describedby="label_u" @bind-value="_newUpdateMachinery.Label"/>
         </div>
     </div>
     <div class="form-group row my-2">
         <label for="function_u" class="col-sm-2 col-form-label">Function</label>
         <div class="col-sm-10">
-            <input type="number" class="form-control" id="function_u" aria-describedby="function_u"/>
+            <input type="text" class="form-control" id="function_u" aria-describedby="function_u" @bind-value="_newUpdateMachinery.Function"/>
         </div>
     </div>
     <div class="form-group row my-2">
         <label for="compartmentid_u" class="col-sm-2 col-form-label">Compartment Id</label>
         <div class="col-sm-10">
-            <input type="number" class="form-control" id="compartmentid_u" aria-describedby="compartmentid_u"/>
+            <input type="number" class="form-control" id="compartmentid_u" aria-describedby="compartmentid_u" @bind-value="_newUpdateMachinery.CompartmentId"/>
         </div>
     </div>
-    <div class="form-group row my-2">
-        <label for="machinerytype_u" class="col-sm-2 col-form-label">Machinery Type</label>
-        <div class="col-sm-10">
-            <select id="machinerytype_u" class="form-control">
-                <option value="EnergySystem">Energy System</option>
-                <option value="EnviromentalSystem">Enviromental System</option>
-                <option value="Weapon">Weapon</option>
-            </select>
-        </div>
-    </div>
-    <button type="submit" class="btn btn-primary mt-2">Submit</button>
 </form>
+<button type="submit" class="btn btn-primary mt-2" @onclick="async () => await UpdateMachinery()">Submit</button>
+@if (_updateError != "")
+{
+    <div class="alert alert-danger my-2" role="alert">
+        @_updateError
+    </div>
+}
 
 <hr/>
 
@@ -138,19 +142,116 @@
     <div class="form-group row my-2">
         <label for="id_d" class="col-sm-2 col-form-label">Id</label>
         <div class="col-sm-10">
-            <input type="number" class="form-control" id="id_d" aria-describedby="id_d"/>
+            <input type="number" class="form-control" id="id_d" aria-describedby="id_d" @bind-value="_deleteId"/>
         </div>
     </div>
-    <button type="submit" class="btn btn-primary mt-2">Submit</button>
 </form>
+<button type="submit" class="btn btn-primary mt-2" @onclick="async () => await DeleteMachinery()">Submit</button>
+
+@if (_deleteError != "")
+{
+    <div class="alert alert-danger my-2" role="alert">
+        @_deleteError
+    </div>
+}
 
 @code {
     private List<Machinery>? MachineriesList { get; set; }
+    private Machinery _newMachinery = new Machinery();
+    private string _newMachineryType = "EnergySystem";
+    private string _createError = "";
 
-    protected override async void OnInitialized()
+    private int _updateId = 0;
+    private Machinery _newUpdateMachinery = new Machinery();
+    private string _updateError = "";
+
+    private int _deleteId = 0;
+    private string _deleteError = "";
+
+    protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
         MachineriesList = await MachineriesRepository.ReadAllAsync();
     }
 
+    private T ConvertTo<T>(Machinery machinery) where T : Machinery, new()
+    {
+        var temp = new T
+        {
+            Label = machinery.Label,
+            Function = machinery.Function,
+            CompartmentId = machinery.CompartmentId
+        };
+        return temp;
+    }
+
+    private async Task AddMachinery()
+    {
+        try
+        {
+            if (_newMachinery.Label == "") throw new Exception("Label darf nicht leer sein");
+            if (_newMachinery.Function == "") throw new Exception("Function darf nicht leer sein");
+            if (await CompartmentsRepository.ReadAsync(_newMachinery.CompartmentId) is null) throw new Exception($"Compartment with Id {_newMachinery.CompartmentId} does not Exist");
+            switch (_newMachineryType)
+            {
+                case "EnergySystem":
+                    await MachineriesRepository.CreateAsync(ConvertTo<EnergySystem>(_newMachinery));
+                    break;
+                case "EnviromentalSystem":
+                    await MachineriesRepository.CreateAsync(ConvertTo<EnviromentalSystem>(_newMachinery));
+                    break;
+                case "Weapon":
+                    await MachineriesRepository.CreateAsync(ConvertTo<Weapon>(_newMachinery));
+                    break;
+            }
+            MachineriesList = await MachineriesRepository.ReadAllAsync(); // Liste aktualisieren
+            _newMachinery = new Machinery(); // Formular zurücksetzen
+            _createError = "";
+        }
+        catch (Exception ex)
+        {
+            _createError = ex.Message;
+        }
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task UpdateMachinery()
+    {
+        try
+        {
+            if (_newUpdateMachinery.Label == "") throw new Exception("Label darf nicht leer sein");
+            if (_newUpdateMachinery.Function == "") throw new Exception("Function darf nicht leer sein");
+            if (await CompartmentsRepository.ReadAsync(_newUpdateMachinery.CompartmentId) is null) throw new Exception($"Compartment with Id {_newMachinery.CompartmentId} does not Exist");
+            _newUpdateMachinery.Id = _updateId;
+
+            await MachineriesRepository.UpdateAsync(_updateId, _newUpdateMachinery);
+            MachineriesList = await MachineriesRepository.ReadAllAsync(); // Liste aktualisieren
+            _newUpdateMachinery = new Machinery(); // Formular zurücksetzen
+            _updateError = "";
+        }
+        catch (Exception ex)
+        {
+            _updateError = ex.Message;
+        }
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task DeleteMachinery()
+    {
+        try
+        {
+            await MachineriesRepository.DeleteAsync(_deleteId);
+            MachineriesList = await MachineriesRepository.ReadAllAsync();
+            _deleteId = 0;
+            _deleteError = "";
+        }
+        catch (Exception e)
+        {
+            _deleteError = e.Message;
+        }
+
+        await InvokeAsync(StateHasChanged);
+    }
 }
