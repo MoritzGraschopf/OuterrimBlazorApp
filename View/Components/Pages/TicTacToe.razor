@@ -1,4 +1,5 @@
 @page "/TicTacToe"
+@rendermode InteractiveServer
 
 <h3>Tic Tac Toe</h3>
 
@@ -6,37 +7,146 @@
 
 <div class="tic-container">
     <div class="tic-field">
-        @for (var i = 0; i < _field.Count; i++)
+        @for (var i = 0; i < _fields.Count; i++)
         {
             var number = i;
-            <button class="@_field[number].Color" @onclick="() => PressButton(number)">@_field[number].Content</button>
+            <button class="@_fields[number].Color" @onclick="() => PressButton(number)">@_fields[number].Content</button>
         }
     </div>
 </div>
 
+<div class="result-container">
+    <div>
+        @switch (_result)
+        {
+            case Results.Ongoing:
+                <div class="alert alert-light" role="alert">
+                    Game is still going
+                </div>
+                break;
+            case Results.WinnerX:
+                <div class="alert alert-primary" role="alert">
+                    The Winner is Player X
+                </div>
+                break;
+            case Results.WinnerO:
+                <div class="alert alert-danger" role="alert">
+                    The Winner is Player O
+                </div>
+                break;
+            case Results.Draw:
+                <div class="alert alert-secondary" role="alert">
+                    The Game ended in a Draw
+                </div>
+                break;
+        }
+    </div>
+    <button>Reset</button>
+</div>
+
 @code {
+    enum Results {
+        WinnerX,
+        WinnerO,
+        Draw,
+        Ongoing
+    }
 
     class Field
     {
         public string Color { get; set; } = "";
-        public string Content { get; set; } = " ";
-        public string Value { get; set; } = "";
+        public string Content { get; set; } = "?";
+        public int Value { get; set; } = 0;
     }
 
-    private readonly List<Field> _field = [];
+    private readonly List<Field> _fields = [];
+    private bool _turnX = true;
+    private int _counter = 0;
+    private bool _stop = false;
+    private Results _result = Results.Ongoing;
 
     protected override void OnInitialized()
     {
         base.OnInitialized();
         for (var i = 0; i < 9; i++)
         {
-            _field.Add(new Field());
+            _fields.Add(new Field());
         }
     }
 
     private void PressButton(int number)
     {
-        _field[number].Content = "X";
+        if (!_stop)
+        {
+            if (_fields[number].Content != "?") return;
+            switch (_turnX)
+            {
+                case true:
+                    _fields[number].Content = "X";
+                    _fields[number].Color = "blue";
+                    _fields[number].Value = 1;
+                    break;
+                case false:
+                    _fields[number].Content = "O";
+                    _fields[number].Color = "red";
+                    _fields[number].Value = 4;
+                    break;
+            }
+            _counter++;
+            CheckStatus();
+            _turnX = !_turnX;
+        }
+
         StateHasChanged();
+    }
+
+    private void CheckStatus()
+    {
+        if (_counter >= 9)
+        {
+            _stop = true;
+            _result = Results.Draw;
+            return;
+        }
+        else
+        {
+            if (CalcRows().Find(x => x == 3) is not null ||
+                CalcDiag().Find(x => x == 3) is not null ||
+                CalcCols().Find(x => x == 3) is not null)
+            {
+                _result = Results.WinnerX;
+                _stop = true;
+            } else if(CalcRows().Find(x => x == 12) is not null ||
+                      CalcDiag().Find(x => x == 12) is not null ||
+                      CalcCols().Find(x => x == 12) is not null)
+
+            {
+                _result = Results.WinnerO;
+                _stop = true;
+            }
+        }
+    }
+
+    private List<int?> CalcRows()
+    {
+        var result1 = _fields[0].Value + _fields[1].Value + _fields[2].Value;
+        var result2 = _fields[3].Value + _fields[4].Value + _fields[5].Value;
+        var result3 = _fields[6].Value + _fields[7].Value + _fields[8].Value;
+        return [result1, result2, result3];
+    }
+
+    private List<int?> CalcCols()
+    {
+        var result1 = _fields[0].Value + _fields[3].Value + _fields[6].Value;
+        var result2 = _fields[1].Value + _fields[4].Value + _fields[7].Value;
+        var result3 = _fields[2].Value + _fields[5].Value + _fields[8].Value;
+        return [result1, result2, result3];
+    }
+
+    private List<int?> CalcDiag()
+    {
+        var result1 = _fields[0].Value + _fields[4].Value + _fields[8].Value;
+        var result2 = _fields[2].Value + _fields[4].Value + _fields[6].Value;
+       return [result1, result2];
     }
 }

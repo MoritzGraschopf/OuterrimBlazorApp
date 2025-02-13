@@ -7,8 +7,8 @@
 
 .tic-field {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(3, 1fr);
+    grid-template-columns: repeat(3, 250px);
+    grid-template-rows: repeat(3, 250px);
     gap: 1rem;
 }
 
@@ -19,9 +19,29 @@
 }
 
 .red {
-    background-color: red;
+    background-color: lightcoral;
 }
 
 .blue {
-    background-color: navy;
+    background-color: lightblue;
+}
+
+.result-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 2rem;
+    margin-top: 2rem;
+}
+.result-container > div {
+    width: 50%;
+}
+.result-container > button {
+    padding: 1rem;
+    border-radius: 0.5rem;
+}
+.result-container > div > div {
+    text-align: center;
 }
