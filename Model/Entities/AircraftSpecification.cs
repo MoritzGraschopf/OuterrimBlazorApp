@@ -19,8 +19,7 @@ public class AircraftSpecification()
 
     public int MaxAltitude { get; set; }
 
-    [StringLength(45)]
-    public string SpecificationCode { get; set; }
+    [StringLength(45)] public string SpecificationCode { get; set; } = "";
 
     public List<Aircraft> Aircrafts { get; set; }
 }

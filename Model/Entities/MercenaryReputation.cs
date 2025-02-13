@@ -12,6 +12,5 @@ public class MercenaryReputation
     public CrimeSyndicate? CrimeSyndicate { get; set; }
     public Mercenary? Mercenary { get; set; }
 
-    [StringLength(45)]
-    public string ReputationChange { get; set; }
+    [StringLength(45)] public string ReputationChange { get; set; } = "";
 }

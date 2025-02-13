@@ -20,6 +20,6 @@ public class Aircraft
     public int SpecificationId { get; set; }
     public AircraftSpecification? AircraftSpecification { get; set; }
 
-    public List<AircraftCrew> AircraftCrews { get; set; } = [];
-    public List<Compartment> Compartments { get; set; } = [];
+    public List<AircraftCrew> AircraftCrews { get; set; }
+    public List<Compartment> Compartments { get; set; }
 }

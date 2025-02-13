@@ -13,6 +13,14 @@
             <button class="@_fields[number].Color" @onclick="() => PressButton(number)">@_fields[number].Content</button>
         }
     </div>
+    <ul>
+        <h4>Stats:</h4>
+        <li>Rounds: @Stats.Rounds</li>
+        <li>Resets: @Stats.Resets</li>
+        <li>X Wins: @Stats.XWins</li>
+        <li>O Wins: @Stats.OWins</li>
+        <li>Draws: @Stats.Draws</li>
+    </ul>
 </div>
 
 <div class="result-container">
@@ -41,7 +49,7 @@
                 break;
         }
     </div>
-    <button>Reset</button>
+    <button @onclick="Reset" class="btn btn-primary">Reset</button>
 </div>
 
 @code {
@@ -59,7 +67,16 @@
         public int Value { get; set; } = 0;
     }
 
-    private readonly List<Field> _fields = [];
+    static class Stats
+    {
+        public static int XWins  = 0;
+        public static int OWins  = 0;
+        public static int Draws  = 0;
+        public static int Rounds = 1;
+        public static int Resets = 0;
+    }
+
+    private List<Field> _fields = [];
     private bool _turnX = true;
     private int _counter = 0;
     private bool _stop = false;
@@ -72,6 +89,25 @@
         {
             _fields.Add(new Field());
         }
+    }
+
+    private void Reset()
+    {
+        _fields = [];
+        for (var i = 0; i < 9; i++)
+        {
+            _fields.Add(new Field());
+        }
+
+        _turnX = true;
+        _counter = 0;
+        _stop = false;
+        _result = Results.Ongoing;
+
+        Stats.Resets++;
+        Stats.Rounds++;
+
+        StateHasChanged();
     }
 
     private void PressButton(int number)
@@ -102,20 +138,13 @@
 
     private void CheckStatus()
     {
-        if (_counter >= 9)
-        {
-            _stop = true;
-            _result = Results.Draw;
-            return;
-        }
-        else
-        {
             if (CalcRows().Find(x => x == 3) is not null ||
                 CalcDiag().Find(x => x == 3) is not null ||
                 CalcCols().Find(x => x == 3) is not null)
             {
                 _result = Results.WinnerX;
                 _stop = true;
+                Stats.XWins++;
             } else if(CalcRows().Find(x => x == 12) is not null ||
                       CalcDiag().Find(x => x == 12) is not null ||
                       CalcCols().Find(x => x == 12) is not null)
@@ -123,8 +152,14 @@
             {
                 _result = Results.WinnerO;
                 _stop = true;
+                Stats.OWins++;
             }
-        }
+            else if (_counter >= 9)
+            {
+                _stop = true;
+                _result = Results.Draw;
+                Stats.Draws++;
+            }
     }
 
     private List<int?> CalcRows()

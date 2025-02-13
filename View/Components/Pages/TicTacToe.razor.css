@@ -26,6 +26,13 @@
     background-color: lightblue;
 }
 
+.tic-container > ul {
+    margin-left: 2.5%;
+}
+.tic-container > ul > li {
+    margin-left: 2rem;
+}
+
 .result-container {
     width: 100%;
     display: flex;
@@ -37,10 +44,6 @@
 }
 .result-container > div {
     width: 50%;
-}
-.result-container > button {
-    padding: 1rem;
-    border-radius: 0.5rem;
 }
 .result-container > div > div {
     text-align: center;

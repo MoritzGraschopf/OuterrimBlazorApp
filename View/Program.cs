@@ -4,6 +4,7 @@ using Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Model.Context;
 using Model.Entities;
+using View.ApiRoutes;
 using View.Components;
 
 var assembly = Assembly.GetExecutingAssembly();
@@ -30,7 +31,14 @@ builder.Services.AddScoped<IRepository<Machinery>, MachineriesRepository>();
 builder.Services.AddScoped<IRepository<Mercenary>, MercenariesRepository>();
 builder.Services.AddScoped<IRepository<MercenaryReputation>, MercenaryReputationsRepository>();
 
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+builder.Services.AddCors();
+
 var app = builder.Build();
+
+app.UseCors();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -40,13 +48,20 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+app.UseSwagger();
+app.UseSwaggerUI();
+
 app.UseHttpsRedirection();
 
-
+app.UseRouting();
 app.UseAntiforgery();
-
 app.MapStaticAssets();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
+
+Map.Get(app);
+Map.Post(app);
+Map.Put(app);
+Map.Delete(app);
 
 app.Run();
