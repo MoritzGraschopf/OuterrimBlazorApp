@@ -13,7 +13,7 @@ public class Machinery
     public string Function { get; set; }
 
     public int CompartmentId { get; set; }
-    public Compartment Compartment { get; set; }
+    public Compartment? Compartment { get; set; }
 }
 
 public class EnergySystem : Machinery { }

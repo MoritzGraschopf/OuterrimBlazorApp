@@ -45,7 +45,7 @@ public abstract class ARepository<TEntity>(OuterRimContext context) : IRepositor
 
     public virtual async Task<List<TEntity>> ReadAllAsync() => await context.Set<TEntity>().ToListAsync();
     
-    public virtual async Task DeleteAsync(int id, TEntity t)
+    public virtual async Task DeleteAsync(int id)
     {
         var existingEntity = await context.Set<TEntity>().FindAsync(id) ?? throw new KeyNotFoundException("Entity not found");
         context.Set<TEntity>().Remove(existingEntity);

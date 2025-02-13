@@ -4,30 +4,23 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Model.Entities;
 
 [Table("AIRCRAFT_SPECIFICATIONS")]
-public class AircraftSpecification(
-    int id,
-    int structure,
-    int fuelTankCapacity,
-    int minSpeed,
-    int maxSpeed,
-    int maxAltitude,
-    string specificationCode)
+public class AircraftSpecification()
 {
     [Key]
-    public int Id { get; set; } = id;
+    public int Id { get; set; }
 
-    public int Structure { get; set; } = structure;
+    public int Structure { get; set; }
 
-    public int FuelTankCapacity { get; set; } = fuelTankCapacity;
+    public int FuelTankCapacity { get; set; }
 
-    public int MinSpeed { get; set; } = minSpeed;
+    public int MinSpeed { get; set; }
 
-    public int MaxSpeed { get; set; } = maxSpeed;
+    public int MaxSpeed { get; set; }
 
-    public int MaxAltitude { get; set; } = maxAltitude;
+    public int MaxAltitude { get; set; }
 
     [StringLength(45)]
-    public string SpecificationCode { get; set; } = specificationCode;
+    public string SpecificationCode { get; set; }
 
     public List<Aircraft> Aircrafts { get; set; }
 }

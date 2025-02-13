@@ -3,13 +3,13 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Model.Entities;
 
 [Table("AIRCRAFT_CREW_JT")]
-public class AircraftCrew(int aircraftId, int mercenaryId, DateTime joinedAt)
+public class AircraftCrew()
 {
-    public int AircraftId { get; set; } = aircraftId;
-    public int MercenaryId { get; set; } = mercenaryId;
+    public int AircraftId { get; set; }
+    public int MercenaryId { get; set; }
 
-    public Aircraft Aircraft { get; set; }
-    public Mercenary Mercenary { get; set; }
+    public Aircraft? Aircraft { get; set; }
+    public Mercenary? Mercenary { get; set; }
 
-    public DateTime JoinedAt { get; set; } = joinedAt;
+    public DateTime JoinedAt { get; set; }
 }

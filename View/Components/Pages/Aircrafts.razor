@@ -1,8 +1,10 @@
 @page "/"
+@rendermode InteractiveServer
 @using Domain.Interfaces
 @using Model.Entities
 
 @inject IRepository<Aircraft> AircraftsRepository
+@inject IRepository<AircraftSpecification> AircraftSpecificationsRepository
 
 <h1>Aircrafts</h1>
 <br>
@@ -11,7 +13,7 @@
 
 <h3>Create</h3>
 
-<form id="create" @onsubmit="async () => { await AddBook(); }">
+<form id="create">
     <div class="form-group row my-2">
         <label for="fuel_c" class="col-sm-2 col-form-label">Fuel</label>
         <div class="col-sm-10">
@@ -42,8 +44,14 @@
             <input type="number" class="form-control" id="specificationId_c" aria-describedby="specificationId_c" @bind-value="_newAircraft.SpecificationId"/>
         </div>
     </div>
-    <button type="submit" class="btn btn-primary mt-2">Submit</button>
 </form>
+<button class="btn btn-primary mt-2" @onclick="async () => await AddAircraft()">Submit</button>
+@if (_createError != "")
+{
+    <div class="alert alert-danger my-2" role="alert">
+        @_createError
+    </div>
+}
 
 <hr/>
 
@@ -85,41 +93,47 @@
     <div class="form-group row my-2">
         <label for="id_u" class="col-sm-2 col-form-label">Id</label>
         <div class="col-sm-10">
-            <input type="number" class="form-control" id="id_u" aria-describedby="id_u"/>
+            <input type="number" class="form-control" id="id_u" aria-describedby="id_u" @bind-value="_updateId"/>
         </div>
     </div>
     <div class="form-group row my-2">
         <label for="fuel_u" class="col-sm-2 col-form-label">Fuel</label>
         <div class="col-sm-10">
-            <input type="number" class="form-control" id="fuel_u" aria-describedby="fuel_u"/>
+            <input type="number" class="form-control" id="fuel_u" aria-describedby="fuel_u" @bind-value="_newUpdateAircraft.Fuel"/>
         </div>
     </div>
     <div class="form-group row my-2">
         <label for="speed_u" class="col-sm-2 col-form-label">Speed</label>
         <div class="col-sm-10">
-            <input type="number" class="form-control" id="speed_u" aria-describedby="speed_u"/>
+            <input type="number" class="form-control" id="speed_u" aria-describedby="speed_u" @bind-value="_newUpdateAircraft.Speed"/>
         </div>
     </div>
     <div class="form-group row my-2">
         <label for="altitude_u" class="col-sm-2 col-form-label">Altitude</label>
         <div class="col-sm-10">
-            <input type="number" class="form-control" id="altitude_u" aria-describedby="altitude_u"/>
+            <input type="number" class="form-control" id="altitude_u" aria-describedby="altitude_u" @bind-value="_newUpdateAircraft.Altitude"/>
         </div>
     </div>
     <div class="form-group row my-2">
         <label for="name_u" class="col-sm-2 col-form-label">Name</label>
         <div class="col-sm-10">
-            <input type="text" class="form-control" id="name_u" aria-describedby="name_u"/>
+            <input type="text" class="form-control" id="name_u" aria-describedby="name_u" @bind-value="_newUpdateAircraft.Name"/>
         </div>
     </div>
     <div class="form-group row my-2">
         <label for="specificationId_u" class="col-sm-2 col-form-label">Specification Id</label>
         <div class="col-sm-10">
-            <input type="number" class="form-control" id="specificationId_u" aria-describedby="specificationId_u"/>
+            <input type="number" class="form-control" id="specificationId_u" aria-describedby="specificationId_u" @bind-value="_newUpdateAircraft.SpecificationId"/>
         </div>
     </div>
-    <button type="submit" class="btn btn-primary mt-2">Submit</button>
 </form>
+<button class="btn btn-primary my-2" @onclick="async () => await UpdateAircraft()">Submit</button>
+@if (_updateError != "")
+{
+    <div class="alert alert-danger my-2" role="alert">
+        @_updateError
+    </div>
+}
 
 <hr>
 
@@ -129,47 +143,88 @@
     <div class="form-group row my-2">
         <label for="id_d" class="col-sm-2 col-form-label">Id</label>
         <div class="col-sm-10">
-            <input type="number" class="form-control" id="id_d" aria-describedby="id_d"/>
+            <input type="number" class="form-control" id="id_d" aria-describedby="id_d" @bind-value="_deleteId"/>
         </div>
     </div>
-    <button type="submit" class="btn btn-primary my-2">Submit</button>
 </form>
+<button class="btn btn-primary my-2" @onclick="async () => await DeleteAircraft()">Submit</button>
+@if (_deleteError != "")
+{
+    <div class="alert alert-danger my-2" role="alert">
+        @_deleteError
+    </div>
+}
 
 @code {
     private List<Aircraft>? AircraftsList { get; set; }
     private Aircraft _newAircraft = new Aircraft();
+    private string _createError = "";
 
-    protected override async void OnInitialized()
+    private int _updateId = 0;
+    private Aircraft _newUpdateAircraft = new Aircraft();
+    private string _updateError = "";
+
+    private int _deleteId = 0;
+    private string _deleteError = "";
+
+    protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
         AircraftsList = await AircraftsRepository.ReadAllAsync();
     }
 
-    private async Task AddBook()
+    private async Task AddAircraft()
     {
-        if (AircraftsList is not null)
-            _newAircraft.Id = AircraftsList[^1].Id + 1;
-        else
-            _newAircraft.Id = 1;
         try
         {
+            if (_newAircraft.Name == "") throw new Exception("Name cannot be empty");
             await AircraftsRepository.CreateAsync(_newAircraft);
+            AircraftsList = await AircraftsRepository.ReadAllAsync(); // Liste aktualisieren
+            _newAircraft = new Aircraft(); // Formular zurücksetzen
+            _createError = "";
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Fehler: {ex.Message}");
-        }
-        AircraftsList = await AircraftsRepository.ReadAllAsync(); // Liste aktualisieren
-        _newAircraft = new Aircraft(); // Formular zurücksetzen
-
-        if (OnBookCreated.HasDelegate)
-        {
-            await OnBookCreated.InvokeAsync();
+            _createError = ex.Message;
         }
 
-        StateHasChanged();
+        await InvokeAsync(StateHasChanged);
     }
 
-    [Parameter]
-    public EventCallback OnBookCreated { get; set; }
+    private async Task UpdateAircraft()
+    {
+        try
+        {
+            if (_newUpdateAircraft.Name == "") throw new Exception("Name cannot be empty");
+            if (await AircraftSpecificationsRepository.ReadAsync(_newUpdateAircraft.SpecificationId) is null) throw new Exception($"Aircraft Specification with Id {_newUpdateAircraft.SpecificationId} does not Exist");
+            _newUpdateAircraft.Id = _updateId;
+            await AircraftsRepository.UpdateAsync(_updateId, _newUpdateAircraft);
+            AircraftsList = await AircraftsRepository.ReadAllAsync(); // Liste aktualisieren
+            _newUpdateAircraft = new Aircraft(); // Formular zurücksetzen
+            _updateError = "";
+        }
+        catch (Exception ex)
+        {
+            _updateError = ex.Message;
+        }
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task DeleteAircraft()
+    {
+        try
+        {
+            await AircraftsRepository.DeleteAsync(_deleteId);
+            AircraftsList = await AircraftsRepository.ReadAllAsync();
+            _deleteId = 0;
+            _deleteError = "";
+        }
+        catch (Exception e)
+        {
+            _deleteError = e.Message;
+        }
+
+        await InvokeAsync(StateHasChanged);
+    }
 }

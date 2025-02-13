@@ -1,0 +1,42 @@
+@page "/TicTacToe"
+
+<h3>Tic Tac Toe</h3>
+
+<PageTitle>Tic Tac Toe</PageTitle>
+
+<div class="tic-container">
+    <div class="tic-field">
+        @for (var i = 0; i < _field.Count; i++)
+        {
+            var number = i;
+            <button class="@_field[number].Color" @onclick="() => PressButton(number)">@_field[number].Content</button>
+        }
+    </div>
+</div>
+
+@code {
+
+    class Field
+    {
+        public string Color { get; set; } = "";
+        public string Content { get; set; } = " ";
+        public string Value { get; set; } = "";
+    }
+
+    private readonly List<Field> _field = [];
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        for (var i = 0; i < 9; i++)
+        {
+            _field.Add(new Field());
+        }
+    }
+
+    private void PressButton(int number)
+    {
+        _field[number].Content = "X";
+        StateHasChanged();
+    }
+}

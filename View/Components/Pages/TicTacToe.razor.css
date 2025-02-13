@@ -1,0 +1,27 @@
+.tic-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
+.tic-field {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    gap: 1rem;
+}
+
+.tic-field > button {
+    padding: 2rem;
+    font-size: 2rem;
+    border-radius: 0.5rem;
+}
+
+.red {
+    background-color: red;
+}
+
+.blue {
+    background-color: navy;
+}
