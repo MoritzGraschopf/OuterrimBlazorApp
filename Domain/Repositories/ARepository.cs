@@ -29,6 +29,13 @@ public abstract class ARepository<TEntity>(OuterRimContext context) : IRepositor
         await context.SaveChangesAsync();
     }
 
+    public virtual async Task UpdateAsync(int[] ids, TEntity t)
+    {
+        var existingEntity = await context.Set<TEntity>().FindAsync(ids[0], ids[1]) ?? throw new KeyNotFoundException("Entity not found");
+        context.Entry(existingEntity).CurrentValues.SetValues(t);
+        await context.SaveChangesAsync();
+    }
+
     public virtual async Task UpdateRangeAsync(List<TEntity> list)
     {
         context.Set<TEntity>().UpdateRange(list);
@@ -36,7 +43,12 @@ public abstract class ARepository<TEntity>(OuterRimContext context) : IRepositor
     }
 
     public virtual async Task<TEntity?> ReadAsync(int id) => await context.Set<TEntity>().FindAsync(id);
-    
+
+    public virtual async Task<TEntity?> ReadAsync(int[] ids)
+    {
+        return await context.Set<TEntity>().FindAsync(ids[0], ids[1]);
+    }
+
     public virtual async Task<List<TEntity>> ReadAsync(Expression<Func<TEntity, bool>> filter) =>
         await context.Set<TEntity>().Where(filter).ToListAsync();
 
@@ -51,6 +63,14 @@ public abstract class ARepository<TEntity>(OuterRimContext context) : IRepositor
         context.Set<TEntity>().Remove(existingEntity);
         await context.SaveChangesAsync();
     }
+
+    public virtual async Task DeleteAsync(int[] ids)
+    {
+        var existingEntity = await context.Set<TEntity>().FindAsync(ids[0], ids[1]) ?? throw new KeyNotFoundException("Entity not found");
+        context.Set<TEntity>().Remove(existingEntity);
+        await context.SaveChangesAsync();
+    }
+
     public async Task DeleteRangeAsync(List<TEntity> list)
     {
         context.Set<TEntity>().RemoveRange(list);

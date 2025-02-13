@@ -178,6 +178,7 @@
         try
         {
             if (_newAircraft.Name == "") throw new Exception("Name cannot be empty");
+            if (await AircraftSpecificationsRepository.ReadAsync(_newAircraft.SpecificationId) is null) throw new Exception($"Aircraft Specification with Id {_newAircraft.SpecificationId} does not Exist");
             await AircraftsRepository.CreateAsync(_newAircraft);
             AircraftsList = await AircraftsRepository.ReadAllAsync(); // Liste aktualisieren
             _newAircraft = new Aircraft(); // Formular zurücksetzen
