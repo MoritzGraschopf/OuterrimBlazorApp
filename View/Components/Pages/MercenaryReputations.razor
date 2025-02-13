@@ -1,8 +1,116 @@
 @page "/MercenaryReputations"
-<h3>Mercenary Reputations</h3>
+@using Domain.Interfaces
+@using Model.Entities
 
+@inject IRepository<MercenaryReputation> MercenaryReputationsRepository
+
+<h1>Mercenary Reputations</h1>
+<br>
 <PageTitle>Mercenary Reputations</PageTitle>
 
+<h3>Create</h3>
+
+<form id="create">
+    <div class="form-group row my-2">
+        <label for="syndicateid_c" class="col-sm-2 col-form-label">Syndicate Id</label>
+        <div class="col-sm-10">
+            <input type="number" class="form-control" id="syndicateid_c" aria-describedby="syndicateid_c"/>
+        </div>
+    </div>
+    <div class="form-group row my-2">
+        <label for="mercenaryid_c" class="col-sm-2 col-form-label">Mercenary Id</label>
+        <div class="col-sm-10">
+            <input type="number" class="form-control" id="mercenaryid_c" aria-describedby="mercenaryid_c"/>
+        </div>
+    </div>
+    <div class="form-group row my-2">
+        <label for="reputationchange_c" class="col-sm-2 col-form-label">Reputation Change</label>
+        <div class="col-sm-10">
+            <input type="text" class="form-control" id="reputationchange_c" aria-describedby="reputationchange_c"/>
+        </div>
+    </div>
+    <button type="submit" class="btn btn-primary mt-2">Submit</button>
+</form>
+
+<hr/>
+
+<h3>Read</h3>
+<table class="table">
+    <thead>
+    <tr>
+        <th scope="col">Syndicate Id</th>
+        <th scope="col">Mercenary Id</th>
+        <th scope="col">Reputation Change</th>
+    </tr>
+    </thead>
+    <tbody>
+    @if (MercenaryReputationsList is not null)
+    {
+        @foreach (var mercenaryReputation in MercenaryReputationsList)
+        {
+            <tr>
+                <td>@mercenaryReputation.SyndicateId</td>
+                <td>@mercenaryReputation.MercenaryId</td>
+                <td>@mercenaryReputation.ReputationChange</td>
+            </tr>
+        }
+    }
+    </tbody>
+</table>
+
+<hr>
+
+<h3>Update</h3>
+
+<form id="update">
+    <div class="form-group row my-2">
+        <label for="syndicateid_u" class="col-sm-2 col-form-label">Syndicate Id</label>
+        <div class="col-sm-10">
+            <input type="number" class="form-control" id="syndicateid_u" aria-describedby="syndicateid_u"/>
+        </div>
+    </div>
+    <div class="form-group row my-2">
+        <label for="mercenaryid_u" class="col-sm-2 col-form-label">Mercenary Id</label>
+        <div class="col-sm-10">
+            <input type="number" class="form-control" id="mercenaryid_u" aria-describedby="mercenaryid_u"/>
+        </div>
+    </div>
+    <div class="form-group row my-2">
+        <label for="reputationchange_u" class="col-sm-2 col-form-label">Reputation Change</label>
+        <div class="col-sm-10">
+            <input type="text" class="form-control" id="reputationchange_u" aria-describedby="reputationchange_u"/>
+        </div>
+    </div>
+    <button type="submit" class="btn btn-primary mt-2">Submit</button>
+</form>
+
+<hr/>
+
+<h3>Delete</h3>
+
+<form id="delete">
+    <div class="form-group row my-2">
+        <label for="syndicateid_d" class="col-sm-2 col-form-label">Syndicate Id</label>
+        <div class="col-sm-10">
+            <input type="number" class="form-control" id="syndicateid_d" aria-describedby="syndicateid_d"/>
+        </div>
+    </div>
+    <div class="form-group row my-2">
+        <label for="mercenaryid_d" class="col-sm-2 col-form-label">Mercenary Id</label>
+        <div class="col-sm-10">
+            <input type="number" class="form-control" id="mercenaryid_d" aria-describedby="mercenaryid_d"/>
+        </div>
+    </div>
+    <button type="submit" class="btn btn-primary mt-2">Submit</button>
+</form>
+
 @code {
+    private List<MercenaryReputation>? MercenaryReputationsList { get; set; }
+
+    protected override async void OnInitialized()
+    {
+        await base.OnInitializedAsync();
+        MercenaryReputationsList = await MercenaryReputationsRepository.ReadAllAsync();
+    }
 
 }

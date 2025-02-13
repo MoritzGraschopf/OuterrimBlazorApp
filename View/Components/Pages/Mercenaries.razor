@@ -1,9 +1,132 @@
 @page "/Mercenaries"
-<h3>Mercenaries</h3>
+@using Domain.Interfaces
+@using Model.Entities
 
+@inject IRepository<Mercenary> MercenariesRepository
+
+<h1>Mercenaries</h1>
+<br>
 <PageTitle>Mercenaries</PageTitle>
 
+<h3>Create</h3>
+
+<form id="create">
+    <div class="form-group row my-2">
+        <label for="firstname_c" class="col-sm-2 col-form-label">First Name</label>
+        <div class="col-sm-10">
+            <input type="text" class="form-control" id="firstname_c" aria-describedby="firstname_c"/>
+        </div>
+    </div>
+    <div class="form-group row my-2">
+        <label for="lastname_c" class="col-sm-2 col-form-label">Last Name</label>
+        <div class="col-sm-10">
+            <input type="text" class="form-control" id="lastname_c" aria-describedby="lastname_c"/>
+        </div>
+    </div>
+    <div class="form-group row my-2">
+        <label for="bodyskills_c" class="col-sm-2 col-form-label">Body Skills</label>
+        <div class="col-sm-10">
+            <input type="number" class="form-control" id="bodyskills_c" aria-describedby="bodyskills_c"/>
+        </div>
+    </div>
+    <div class="form-group row my-2">
+        <label for="combatskills_c" class="col-sm-2 col-form-label">Combat Skills</label>
+        <div class="col-sm-10">
+            <input type="number" class="form-control" id="combatskills_c" aria-describedby="combatskills_c"/>
+        </div>
+    </div>
+    <button type="submit" class="btn btn-primary mt-2">Submit</button>
+</form>
+
+<hr/>
+
+<h3>Read</h3>
+<table class="table">
+    <thead>
+    <tr>
+        <th scope="col">Id</th>
+        <th scope="col">First Name</th>
+        <th scope="col">Last Name</th>
+        <th scope="col">Body Skills</th>
+        <th scope="col">Combat Skills</th>
+    </tr>
+    </thead>
+    <tbody>
+    @if (MercenariesList is not null)
+    {
+        @foreach (var mercenary in MercenariesList)
+        {
+            <tr>
+                <th scope="row">@mercenary.Id</th>
+                <td>@mercenary.FirstName</td>
+                <td>@mercenary.LastName</td>
+                <td>@mercenary.BodySkills</td>
+                <td>@mercenary.CombatSkills</td>
+            </tr>
+        }
+    }
+    </tbody>
+</table>
+
+<hr>
+
+<h3>Update</h3>
+
+<form id="update">
+    <div class="form-group row my-2">
+        <label for="id_u" class="col-sm-2 col-form-label">Id</label>
+        <div class="col-sm-10">
+            <input type="number" class="form-control" id="id_u" aria-describedby="id_u"/>
+        </div>
+    </div>
+    <div class="form-group row my-2">
+        <label for="firstname_u" class="col-sm-2 col-form-label">First Name</label>
+        <div class="col-sm-10">
+            <input type="text" class="form-control" id="firstname_u" aria-describedby="firstname_u"/>
+        </div>
+    </div>
+    <div class="form-group row my-2">
+        <label for="lastname_u" class="col-sm-2 col-form-label">Last Name</label>
+        <div class="col-sm-10">
+            <input type="text" class="form-control" id="lastname_u" aria-describedby="lastname_u"/>
+        </div>
+    </div>
+    <div class="form-group row my-2">
+        <label for="bodyskills_u" class="col-sm-2 col-form-label">Body Skills</label>
+        <div class="col-sm-10">
+            <input type="number" class="form-control" id="bodyskills_u" aria-describedby="bodyskills_u"/>
+        </div>
+    </div>
+    <div class="form-group row my-2">
+        <label for="combatskills_u" class="col-sm-2 col-form-label">Combat Skills</label>
+        <div class="col-sm-10">
+            <input type="number" class="form-control" id="combatskills_u" aria-describedby="combatskills_u"/>
+        </div>
+    </div>
+    <button type="submit" class="btn btn-primary mt-2">Submit</button>
+</form>
+
+<hr/>
+
+<h3>Delete</h3>
+
+<form id="delete">
+    <div class="form-group row my-2">
+        <label for="id_d" class="col-sm-2 col-form-label">Id</label>
+        <div class="col-sm-10">
+            <input type="number" class="form-control" id="id_d" aria-describedby="id_d"/>
+        </div>
+    </div>
+    <button type="submit" class="btn btn-primary mt-2">Submit</button>
+</form>
 
 @code {
+    private List<Mercenary>? MercenariesList { get; set; }
+
+    protected override async void OnInitialized()
+    {
+        await base.OnInitializedAsync();
+        MercenariesList = await MercenariesRepository.ReadAllAsync();
+    }
 
 }
