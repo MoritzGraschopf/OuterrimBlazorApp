@@ -660,7 +660,7 @@ public static class Map
                 return Results.NotFound();
 
             await repository.DeleteAsync(id);
-            return Results.NoContent();
+            return Results.Ok();
         });
 
         #endregion
