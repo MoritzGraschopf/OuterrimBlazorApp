@@ -21,8 +21,19 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
+import {
+    Drawer,
+    DrawerClose,
+    DrawerContent,
+    DrawerDescription,
+    DrawerFooter,
+    DrawerHeader,
+    DrawerTitle,
+    DrawerTrigger,
+} from "@/components/ui/drawer"
 import {useEffect, useState} from "react";
-import {Trash2} from "lucide-react";
+import {CirclePlus, Trash2} from "lucide-react";
+import {FormAircraft} from "@/components/create/form-aircraft";
 
 type response = {
     id: number,
@@ -104,7 +115,7 @@ export default function TableComponent({name, link}: { name: string, link: strin
                                 <TableCell className="text-right ">
                                     <AlertDialog>
                                         <AlertDialogTrigger asChild>
-                                            <Button variant="outline" className="text-red-500">
+                                            <Button variant="outline" className="text-red-500" size="icon">
                                                 <Trash2/>
                                             </Button>
                                         </AlertDialogTrigger>
@@ -112,18 +123,21 @@ export default function TableComponent({name, link}: { name: string, link: strin
                                             <AlertDialogHeader>
                                                 <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                                                 <AlertDialogDescription>
-                                                    This action cannot be undone. This will permanently delete your
-                                                    account and remove your data from our servers.
+                                                    This action cannot be undone. This will permanently delete selected
+                                                    Entity and remove it from our servers.
                                                 </AlertDialogDescription>
                                             </AlertDialogHeader>
                                             <AlertDialogFooter>
                                                 <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                                <AlertDialogAction
-                                                    onClick={() => {
+                                                <AlertDialogAction asChild>
+                                                    <Button onClick={() => {
                                                         if (name === "Aircraft Crew") deleteCrewResponseItem(item.aircraftId, item.mercenaryId);
                                                         else if (name === "Mercenary Reputation") deleteReputationResponseItem(item.syndicateId, item.mercenaryId)
                                                         else deleteResponseItem(item.id)
-                                                    }}>Continue</AlertDialogAction>
+                                                    }} variant="destructive">
+                                                        Continue
+                                                    </Button>
+                                                </AlertDialogAction>
                                             </AlertDialogFooter>
                                         </AlertDialogContent>
                                     </AlertDialog>
@@ -131,6 +145,31 @@ export default function TableComponent({name, link}: { name: string, link: strin
                             </TableRow>
                         )
                     })}
+                    <TableRow>
+                        <TableCell colSpan={Object.keys(responseItem[0]).length + 1} className="text-center">
+                            <Drawer>
+                                <DrawerTrigger asChild>
+                                    <Button variant="outline" size="icon">
+                                        <CirclePlus/>
+                                    </Button>
+                                </DrawerTrigger>
+                                <DrawerContent>
+                                    <div className="mx-auto w-full max-w-sm mt-2">
+                                        <DrawerHeader>
+                                            <DrawerTitle>Create new {name}</DrawerTitle>
+                                        </DrawerHeader>
+                                        <FormAircraft/>
+                                        <DrawerFooter>
+                                            <Button>Submit</Button>
+                                            <DrawerClose asChild>
+                                                <Button variant="secondary">Cancel</Button>
+                                            </DrawerClose>
+                                        </DrawerFooter>
+                                    </div>
+                                </DrawerContent>
+                            </Drawer>
+                        </TableCell>
+                    </TableRow>
                 </TableBody>
             </Table>
         </>
