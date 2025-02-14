@@ -22,14 +22,9 @@ const data = {
             icon: HouseIcon
         },
         {
-            title: "Read",
-            url: "/read",
+            title: "Overview",
+            url: "/overview",
             icon: BookOpenIcon
-        },
-        {
-            title: "Update",
-            url: "/update",
-            icon: Upload
         },
     ]
 }

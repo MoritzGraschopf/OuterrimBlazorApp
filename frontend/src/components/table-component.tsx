@@ -21,19 +21,11 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import {
-    Drawer,
-    DrawerClose,
-    DrawerContent,
-    DrawerDescription,
-    DrawerFooter,
-    DrawerHeader,
-    DrawerTitle,
-    DrawerTrigger,
-} from "@/components/ui/drawer"
 import {useEffect, useState} from "react";
-import {CirclePlus, Trash2} from "lucide-react";
-import {FormAircraft} from "@/components/create/form-aircraft";
+import {Trash2} from "lucide-react";
+import {FormCreate} from "@/components/create/form-create";
+import {z, ZodObject} from "zod";
+import {FormCreateAircraftCrew} from "@/components/create/form-create-aircraftcrew";
 
 type response = {
     id: number,
@@ -42,7 +34,11 @@ type response = {
 
 const regex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/
 
-export default function TableComponent({name, link}: { name: string, link: string }) {
+export default function TableComponent({name, link, formSchema}: {
+    name: string,
+    link: string,
+    formSchema: ZodObject<any>
+}) {
     const [responseItem, setResponseItem] = useState<response[] | null>(null);
 
     useEffect(() => {
@@ -146,29 +142,17 @@ export default function TableComponent({name, link}: { name: string, link: strin
                         )
                     })}
                     <TableRow>
-                        <TableCell colSpan={Object.keys(responseItem[0]).length + 1} className="text-center">
-                            <Drawer>
-                                <DrawerTrigger asChild>
-                                    <Button variant="outline" size="icon">
-                                        <CirclePlus/>
-                                    </Button>
-                                </DrawerTrigger>
-                                <DrawerContent>
-                                    <div className="mx-auto w-full max-w-sm mt-2">
-                                        <DrawerHeader>
-                                            <DrawerTitle>Create new {name}</DrawerTitle>
-                                        </DrawerHeader>
-                                        <FormAircraft/>
-                                        <DrawerFooter>
-                                            <Button>Submit</Button>
-                                            <DrawerClose asChild>
-                                                <Button variant="secondary">Cancel</Button>
-                                            </DrawerClose>
-                                        </DrawerFooter>
-                                    </div>
-                                </DrawerContent>
-                            </Drawer>
-                        </TableCell>
+                        {name === "Aircraft Crew" ? (
+                            <TableCell colSpan={Object.keys(responseItem[0]).length + 1} className="text-center">
+                                <FormCreateAircraftCrew fetchDataAction={fetchData} formSchema={formSchema} link={link} entityName={name}/>
+                            </TableCell>
+                        ) : (
+                            <TableCell colSpan={Object.keys(responseItem[0]).length + 1} className="text-center">
+                                <FormCreate fetchDataAction={fetchData} formSchema={formSchema} link={link}
+                                            entityName={name}/>
+                            </TableCell>
+                        )}
+
                     </TableRow>
                 </TableBody>
             </Table>
