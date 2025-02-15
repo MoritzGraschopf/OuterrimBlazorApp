@@ -202,6 +202,7 @@
             await AircraftsRepository.UpdateAsync(_updateId, _newUpdateAircraft);
             AircraftsList = await AircraftsRepository.ReadAllAsync(); // Liste aktualisieren
             _newUpdateAircraft = new Aircraft(); // Formular zurücksetzen
+            _updateId = 0;
             _updateError = "";
         }
         catch (Exception ex)

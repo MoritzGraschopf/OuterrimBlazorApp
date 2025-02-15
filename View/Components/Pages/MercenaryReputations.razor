@@ -1,8 +1,11 @@
 @page "/MercenaryReputations"
+@rendermode InteractiveServer
 @using Domain.Interfaces
 @using Model.Entities
 
 @inject IRepository<MercenaryReputation> MercenaryReputationsRepository
+@inject IRepository<CrimeSyndicate> CrimeSyndicateRepository
+@inject IRepository<Mercenary> MercenaryRepository
 
 <h1>Mercenary Reputations</h1>
 <br>
@@ -14,23 +17,29 @@
     <div class="form-group row my-2">
         <label for="syndicateid_c" class="col-sm-2 col-form-label">Syndicate Id</label>
         <div class="col-sm-10">
-            <input type="number" class="form-control" id="syndicateid_c" aria-describedby="syndicateid_c"/>
+            <input type="number" class="form-control" id="syndicateid_c" aria-describedby="syndicateid_c" @bind-value="_newMercenaryReputation.SyndicateId"/>
         </div>
     </div>
     <div class="form-group row my-2">
         <label for="mercenaryid_c" class="col-sm-2 col-form-label">Mercenary Id</label>
         <div class="col-sm-10">
-            <input type="number" class="form-control" id="mercenaryid_c" aria-describedby="mercenaryid_c"/>
+            <input type="number" class="form-control" id="mercenaryid_c" aria-describedby="mercenaryid_c" @bind-value="_newMercenaryReputation.MercenaryId"/>
         </div>
     </div>
     <div class="form-group row my-2">
         <label for="reputationchange_c" class="col-sm-2 col-form-label">Reputation Change</label>
         <div class="col-sm-10">
-            <input type="text" class="form-control" id="reputationchange_c" aria-describedby="reputationchange_c"/>
+            <input type="text" class="form-control" id="reputationchange_c" aria-describedby="reputationchange_c" @bind-value="_newMercenaryReputation.ReputationChange"/>
         </div>
     </div>
-    <button type="submit" class="btn btn-primary mt-2">Submit</button>
 </form>
+<button type="submit" class="btn btn-primary mt-2" @onclick="async () => await AddMercenaryReputation()">Submit</button>
+@if (_createError != "")
+{
+    <div class="alert alert-danger my-2" role="alert">
+        @_createError
+    </div>
+}
 
 <hr/>
 
@@ -66,23 +75,29 @@
     <div class="form-group row my-2">
         <label for="syndicateid_u" class="col-sm-2 col-form-label">Syndicate Id</label>
         <div class="col-sm-10">
-            <input type="number" class="form-control" id="syndicateid_u" aria-describedby="syndicateid_u"/>
+            <input type="number" class="form-control" id="syndicateid_u" aria-describedby="syndicateid_u" @bind-value="_newUpdateMercenaryReputation.SyndicateId"/>
         </div>
     </div>
     <div class="form-group row my-2">
         <label for="mercenaryid_u" class="col-sm-2 col-form-label">Mercenary Id</label>
         <div class="col-sm-10">
-            <input type="number" class="form-control" id="mercenaryid_u" aria-describedby="mercenaryid_u"/>
+            <input type="number" class="form-control" id="mercenaryid_u" aria-describedby="mercenaryid_u" @bind-value="_newUpdateMercenaryReputation.MercenaryId"/>
         </div>
     </div>
     <div class="form-group row my-2">
         <label for="reputationchange_u" class="col-sm-2 col-form-label">Reputation Change</label>
         <div class="col-sm-10">
-            <input type="text" class="form-control" id="reputationchange_u" aria-describedby="reputationchange_u"/>
+            <input type="text" class="form-control" id="reputationchange_u" aria-describedby="reputationchange_u" @bind-value="_newUpdateMercenaryReputation.ReputationChange"/>
         </div>
     </div>
-    <button type="submit" class="btn btn-primary mt-2">Submit</button>
 </form>
+<button type="submit" class="btn btn-primary mt-2" @onclick="async () => await UpdateMercenaryReputation()">Submit</button>
+@if (_updateError != "")
+{
+    <div class="alert alert-danger my-2" role="alert">
+        @_updateError
+    </div>
+}
 
 <hr/>
 
@@ -92,25 +107,100 @@
     <div class="form-group row my-2">
         <label for="syndicateid_d" class="col-sm-2 col-form-label">Syndicate Id</label>
         <div class="col-sm-10">
-            <input type="number" class="form-control" id="syndicateid_d" aria-describedby="syndicateid_d"/>
+            <input type="number" class="form-control" id="syndicateid_d" aria-describedby="syndicateid_d" @bind-value="_deleteSyndicateId"/>
         </div>
     </div>
     <div class="form-group row my-2">
         <label for="mercenaryid_d" class="col-sm-2 col-form-label">Mercenary Id</label>
         <div class="col-sm-10">
-            <input type="number" class="form-control" id="mercenaryid_d" aria-describedby="mercenaryid_d"/>
+            <input type="number" class="form-control" id="mercenaryid_d" aria-describedby="mercenaryid_d" @bind-value="_deleteMercenaryId"/>
         </div>
     </div>
-    <button type="submit" class="btn btn-primary mt-2">Submit</button>
 </form>
+<button type="submit" class="btn btn-primary mt-2" @onclick="async () => await DeleteMercenaryReputation()">Submit</button>
+@if (_deleteError != "")
+{
+    <div class="alert alert-danger my-2" role="alert">
+        @_deleteError
+    </div>
+}
 
 @code {
     private List<MercenaryReputation>? MercenaryReputationsList { get; set; }
 
-    protected override async void OnInitialized()
+    private MercenaryReputation _newMercenaryReputation = new();
+    private string _createError = "";
+
+    private MercenaryReputation _newUpdateMercenaryReputation = new();
+    private string _updateError = "";
+
+    private int _deleteSyndicateId = 0;
+    private int _deleteMercenaryId = 0;
+    private string _deleteError = "";
+
+    protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
         MercenaryReputationsList = await MercenaryReputationsRepository.ReadAllAsync();
     }
 
+    private async Task AddMercenaryReputation()
+    {
+        try
+        {
+            if (await CrimeSyndicateRepository.ReadAsync(_newMercenaryReputation.SyndicateId) is null) throw new Exception($"Aircraft with Id {_newMercenaryReputation.SyndicateId} does not Exist");
+            if (await MercenaryRepository.ReadAsync(_newMercenaryReputation.MercenaryId) is null) throw new Exception($"Mercenary with Id {_newMercenaryReputation.MercenaryId} does not Exist");
+            if (_newMercenaryReputation.ReputationChange == "") throw new Exception("Reputation Change cannot be Emptry");
+
+            await MercenaryReputationsRepository.CreateAsync(_newMercenaryReputation);
+            MercenaryReputationsList = await MercenaryReputationsRepository.ReadAllAsync(); // Liste aktualisieren
+            _newMercenaryReputation = new MercenaryReputation(); // Formular zurücksetzen
+            _createError = "";
+        }
+        catch (Exception ex)
+        {
+            _createError = ex.Message;
+        }
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task UpdateMercenaryReputation()
+    {
+        try
+        {
+            if (await CrimeSyndicateRepository.ReadAsync(_newUpdateMercenaryReputation.SyndicateId) is null) throw new Exception($"Aircraft with Id {_newMercenaryReputation.SyndicateId} does not Exist");
+            if (await MercenaryRepository.ReadAsync(_newUpdateMercenaryReputation.MercenaryId) is null) throw new Exception($"Mercenary with Id {_newMercenaryReputation.MercenaryId} does not Exist");
+            if (_newUpdateMercenaryReputation.ReputationChange == "") throw new Exception("Reputation Change cannot be Emptry");
+
+            await MercenaryReputationsRepository.UpdateAsync([_newUpdateMercenaryReputation.SyndicateId, _newUpdateMercenaryReputation.MercenaryId], _newUpdateMercenaryReputation);
+            MercenaryReputationsList = await MercenaryReputationsRepository.ReadAllAsync(); // Liste aktualisieren
+            _newUpdateMercenaryReputation = new MercenaryReputation(); // Formular zurücksetzen
+            _updateError = "";
+        }
+        catch (Exception ex)
+        {
+            _updateError = ex.Message;
+        }
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task DeleteMercenaryReputation()
+    {
+        try
+        {
+            await MercenaryReputationsRepository.DeleteAsync([_deleteSyndicateId, _deleteMercenaryId]);
+            MercenaryReputationsList = await MercenaryReputationsRepository.ReadAllAsync();
+            _deleteSyndicateId = 0;
+            _deleteMercenaryId = 0;
+            _deleteError = "";
+        }
+        catch (Exception e)
+        {
+            _deleteError = e.Message;
+        }
+
+        await InvokeAsync(StateHasChanged);
+    }
 }
