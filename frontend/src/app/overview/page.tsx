@@ -18,6 +18,7 @@ const selectItems = [
         name: "Aircraft",
         value: "aircrafts",
         schema: z.object({
+            id: z.coerce.number().optional().nullable(),
             fuel: z.coerce.number(),  // Wandelt Input-String automatisch in eine Zahl um
             speed: z.coerce.number(),
             altitude: z.coerce.number(),
@@ -31,12 +32,14 @@ const selectItems = [
         schema: z.object({
             aircraftId: z.coerce.number(),  // Wandelt Input-String automatisch in eine Zahl um
             mercenaryId: z.coerce.number(),
+            joinedAt: z.coerce.date().nullable().optional()
         })
     },
     {
         name: "Aircraft Specification",
         value: "aircraftspecifications",
         schema: z.object({
+            id: z.coerce.number().optional().nullable(),
             structure: z.coerce.number(),  // Wandelt Input-String automatisch in eine Zahl um
             fuelTankCapacity: z.coerce.number(),
             minSpeed: z.coerce.number(),
@@ -49,6 +52,7 @@ const selectItems = [
         name: "Compartment",
         value: "compartments",
         schema: z.object({
+            id: z.coerce.number().optional().nullable(),
             aircraftId: z.coerce.number(),  // Wandelt Input-String automatisch in eine Zahl um
         })
     },
@@ -56,6 +60,7 @@ const selectItems = [
         name: "Crime Syndicate",
         value: "crimesyndicates",
         schema: z.object({
+            id: z.coerce.number().optional().nullable(),
             name: z.string().trim().max(120).min(1, "Name darf nicht leer sein"),  // Wandelt Input-String automatisch in eine Zahl um
             location: z.string().trim().max(200).min(1, "Location darf nicht leer sein"),
         })
@@ -64,6 +69,7 @@ const selectItems = [
         name: "Machinery",
         value: "machineries",
         schema: z.object({
+            id: z.coerce.number().optional().nullable(),
             label: z.string().trim().max(45, "Label darf nur 45 Zeichen lang sein").min(1, "Label darf nicht leer sein"),  // Wandelt Input-String automatisch in eine Zahl um
             function: z.string(),
             compartmentId: z.coerce.number(),
@@ -74,6 +80,7 @@ const selectItems = [
         name: "Mercenary",
         value: "mercenaries",
         schema: z.object({
+            id: z.coerce.number().optional().nullable(),
             firstName: z.string().trim().min(1, "First Name darf nicht leer sein"),  // Wandelt Input-String automatisch in eine Zahl um
             lastName: z.string().trim().min(1, "Last Name darf nicht leer sein"),
             bodySkills: z.coerce.number(),

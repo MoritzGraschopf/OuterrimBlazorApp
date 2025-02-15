@@ -78,60 +78,70 @@ export function FormCreate({fetchDataAction, formSchema, link, entityName}: {
         aircraftspecifications: ['id'],
         compartments: ['aircraftId'],
         crimesyndicates: ['id'],
-        machineries: ['id'],
+        machineries: ['compartmentId'],
         mercenaries: ['id'],
         mercenaryreputations: ['syndicateId', 'mercenaryId'],
     };
 
     function onSubmit(values: z.infer<typeof formSchema>) {
-        // Bestimme die richtigen ID-Felder basierend auf dem aktuellen `link`
-        const currentEntity = link.split('/').pop(); // Extrahiere den Entitätsnamen aus dem Link
-        const fields = idFields[currentEntity || ''] || []; // Hole die zugehörigen ID-Felder
+        try {
+            // Bestimme die richtigen ID-Felder basierend auf dem aktuellen `link`
+            const currentEntity = link.split('/').pop(); // Extrahiere den Entitätsnamen aus dem Link
+            const fields = idFields[currentEntity || ''] || []; // Hole die zugehörigen ID-Felder
 
-        if (fields.length === 0) {
-            console.error('Keine ID-Felder für diese Entität definiert!');
-        }
-
-        // Extrahiere die IDs aus dem `values`-Objekt
-        const idValues = fields.map(field => {
-            if (values[field] === undefined || values[field] === null) {
-                console.error(`Feld "${field}" fehlt im values-Objekt!`);
+            if (fields.length === 0) {
+                console.log('Keine ID-Felder für diese Entität definiert!');
             }
-            return values[field];
-        }).filter(id => id !== undefined && id !== null);
 
-        const idDisplay = idValues.length ? idValues.join(' & ') : 'unknown';
-
-        if (idValues.length === 0) {
-            // Wenn keine gültige ID gefunden wurde, werfen wir einen Fehler
-            throw new Error(`No related entity found with IDs: ${idDisplay}`);
-        }
-
-        fetch(link, {
-            method: "POST",
-            body: JSON.stringify(values),
-            headers: { "Content-Type": "application/json" },
-        })
-            .then(res => {
-                if (res.status === 500) {
-                    throw new Error(`No related entity found with IDs: ${idDisplay}`);
+            // Extrahiere die IDs aus dem `values`-Objekt
+            const idValues = fields.map(field => {
+                if (values[field] === undefined || values[field] === null) {
+                    console.log(`Feld "${field}" fehlt im values-Objekt!`);
                 }
-                return res.json();
-            })
-            .then(data => {
-                console.log(data);
-                fetchDataAction();
-                setOpen(false);
-            })
-            .catch(err => {
+                return values[field];
+            }).filter(id => id !== undefined && id !== null);
+
+            const idDisplay = idValues.length ? idValues.join(' & ') : 'unknown';
+
+            if (idValues.length === 0) {
                 toast({
                     title: "An error occurred.",
-                    description: err.message,
+                    description: `No related entity found with IDs: ${idDisplay}`,
                     variant: "destructive"
                 });
-            });
-    }
+            }
 
+            fetch(link, {
+                method: "POST",
+                body: JSON.stringify(values),
+                headers: {"Content-Type": "application/json"},
+            })
+                .then(res => {
+                    if (res.status === 500) {
+                        throw new Error(`No related entity found with IDs: ${idDisplay}`);
+                    }
+                    return res.json();
+                })
+                .then(data => {
+                    console.log(data);
+                    fetchDataAction();
+                    setOpen(false);
+                })
+                .catch(err => {
+                    toast({
+                        title: "An error occurred.",
+                        description: err.message,
+                        variant: "destructive"
+                    });
+                });
+        } catch (error) {
+            toast({
+                title: "An error occurred.",
+                description: (error as Error).message,
+                variant: "destructive"
+            });
+        }
+    }
 
 
     return (
@@ -151,6 +161,7 @@ export function FormCreate({fetchDataAction, formSchema, link, entityName}: {
                             </DrawerHeader>
                             <div className="px-4 flex flex-col gap-2">
                                 {Object.entries(formSchema.shape).map(([key, value]) => {
+                                    if (key === "id") return null
                                     return (
                                         <FormField
                                             key={key}

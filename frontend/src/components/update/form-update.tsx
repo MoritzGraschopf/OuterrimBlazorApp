@@ -128,23 +128,26 @@ export default function FormUpdate({
                             </DrawerHeader>
                             <div className="px-4 flex flex-col gap-2">
                                 {Object.entries(formSchema.shape).map(([key, value]) => {
+                                    if (key === "id") return null
                                     return key === "machineryType" ? null : (
                                         <FormField
                                             key={key}
                                             control={form.control}
                                             name={key as any} // Typensicherheit durch Zod-Schema
                                             render={({ field }) => (
-                                                <FormControl>
+
                                                     <FormItem>
                                                         <FormLabel>{key.charAt(0).toUpperCase() + key.slice(1)}</FormLabel>
+                                                        <FormControl>
                                                         <Input
                                                             type={value instanceof z.ZodNumber ? "number" : "text"}
                                                             value={field.value ?? ""} // 🔥 Null in "" umwandeln
                                                             onChange={field.onChange}
                                                         />
+                                                        </FormControl>
                                                         <FormMessage/>
                                                     </FormItem>
-                                                </FormControl>
+
                                             )}
                                         />
                                     )
