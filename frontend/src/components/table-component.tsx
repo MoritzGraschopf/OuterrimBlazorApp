@@ -24,8 +24,10 @@ import {
 import {useEffect, useState} from "react";
 import {Trash2} from "lucide-react";
 import {FormCreate} from "@/components/create/form-create";
-import {z, ZodObject} from "zod";
+import {ZodObject} from "zod";
 import {FormCreateAircraftCrew} from "@/components/create/form-create-aircraftcrew";
+import FormUpdate from "@/components/update/form-update";
+import FormUpdateAircraftcrew from "@/components/update/form-update-aircraftcrew";
 
 type response = {
     id: number,
@@ -108,7 +110,16 @@ export default function TableComponent({name, link, formSchema}: {
                                         <TableCell key={Math.random()}>{checkRegex(value)}</TableCell>
                                     )
                                 })}
-                                <TableCell className="text-right ">
+                                <TableCell className="flex w-full justify-end items-center gap-2">
+                                    {name === "Aircraft Crew" ? (
+                                        <FormUpdateAircraftcrew fetchDataAction={fetchData} formSchema={formSchema} link={link} entityName={name} currentEntity={item}/>
+                                    ) : (
+                                        <>{name === "Mercenary Reputation" ? (
+                                            <FormUpdate fetchDataAction={fetchData} formSchema={formSchema} link={link} entityName={name} currentEntity={item}/>
+                                        ) : (
+                                            <FormUpdate fetchDataAction={fetchData} formSchema={formSchema} link={link + `/${item.id}`} entityName={name} currentEntity={item}/>
+                                        )}</>
+                                    )}
                                     <AlertDialog>
                                         <AlertDialogTrigger asChild>
                                             <Button variant="outline" className="text-red-500" size="icon">

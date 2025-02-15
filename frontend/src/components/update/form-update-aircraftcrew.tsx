@@ -1,9 +1,9 @@
 "use client"
 
-import {zodResolver} from "@hookform/resolvers/zod"
-import {useForm} from "react-hook-form"
-import {z, ZodObject} from "zod"
-import {Button} from "@/components/ui/button"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
+import { z, ZodObject } from "zod"
+import { Button } from "@/components/ui/button"
 import {
     Form,
     FormControl,
@@ -12,84 +12,116 @@ import {
     FormLabel,
     FormMessage,
 } from "@/components/ui/form"
-import {Input} from "@/components/ui/input"
 import {
     Drawer,
     DrawerClose,
-    DrawerContent, DrawerDescription,
+    DrawerContent,
+    DrawerDescription,
     DrawerFooter,
     DrawerHeader,
     DrawerTitle,
-    DrawerTrigger
-} from "@/components/ui/drawer";
-import {CirclePlus} from "lucide-react";
-import React from "react";
-import {useToast} from "@/hooks/use-toast";
+    DrawerTrigger,
+} from "@/components/ui/drawer"
+import {Calendar as CalendarIcon, PencilLine} from "lucide-react"
+import React, { useEffect } from "react"
+import { useToast } from "@/hooks/use-toast"
+import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
+import {cn} from "@/lib/utils";
+import {addDays, format} from "date-fns";
+import {Calendar} from "@/components/ui/calendar";
 
-import { Calendar } from "@/components/ui/calendar"
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "@/components/ui/popover"
-import { cn } from "@/lib/utils"
-import { format } from "date-fns"
-import { Calendar as CalendarIcon } from "lucide-react"
-
-
-export function FormCreateAircraftCrew({fetchDataAction, formSchema, link, entityName}: {
-    fetchDataAction: () => void,
-    formSchema: ZodObject<any>,
-    link: string,
-    entityName: string,
+export default function FormUpdateAircraftcrew({
+                                       fetchDataAction,
+                                       formSchema,
+                                       link,
+                                       entityName,
+                                       currentEntity,
+                                   }: {
+    fetchDataAction: () => void
+    formSchema: ZodObject<any>
+    link: string
+    entityName: string
+    currentEntity: any
 }) {
-    const {toast} = useToast()
+    const { toast } = useToast()
     const [open, setOpen] = React.useState(false)
-    const [date, setDate] = React.useState<Date>()
+    const [date, setDate] = React.useState<Date | undefined>(currentEntity.joinedAt)
+    const [changedDate, setChangedDate] = React.useState(false)
 
-    // 1. Define your form.
+    // 1. Define your form with defaultValues based on currentEntity
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
-        defaultValues: {
-            aircraftId: 0,
-            mercenaryId: 0,
-            joinedAt: date,
-        }
+        defaultValues: Object.fromEntries(
+            Object.entries(formSchema.shape).map(([key]) => {
+                return [key, currentEntity[key]]
+            })
+        ),
     })
 
-    // 2. Define a submit handler.
+    useEffect(() => {
+        form.reset(
+            Object.fromEntries(
+                Object.entries(formSchema.shape).map(([key]) => {
+                    return [key, currentEntity[key]]
+                })
+            )
+        )
+    }, [formSchema, currentEntity, form])
+
+    // 2. Define the idFields mapping
+    const idFields: { [key: string]: string[] } = {
+        aircrafts: ["specificationId"], // Für Aircrafts nehmen wir "specificationId" an
+        aircraftcrew: ["aircraftId", "mercenaryId"],
+        aircraftspecifications: ["id"],
+        compartments: ["aircraftId"],
+        crimesyndicates: ["id"],
+        machineries: ["id"],
+        mercenaries: ["id"],
+        mercenaryreputations: ["syndicateId", "mercenaryId"],
+    }
+
+    // 3. Define a submit handler that uses idFields in the error message
     function onSubmit(values: z.infer<typeof formSchema>) {
-        const idField = Object.keys(values).find(key => key.toLowerCase().includes("id")) || "unknown ID";
+        // Bestimme anhand des Links den Entitätsnamen (z. B. "aircrafts", "aircraftcrew", etc.)
+        const currentEntityKey = link.split("/").pop() || ""
+        const fields = idFields[currentEntityKey] || []
+        const idValues = fields
+            .map((field) => values[field])
+            .filter((val) => val !== undefined && val !== null)
+        const idDisplay = idValues.length ? idValues.join(" & ") : "unknown"
 
         values = {
             aircraftId: values.aircraftId,
             mercenaryId: values.mercenaryId,
-            joinedAt: date,
+            joinedAt: changedDate ? addDays(date!, 1) : date,
         }
+        console.log(values)
+        console.log(changedDate)
 
         fetch(link, {
-            method: "POST",
+            method: "PUT",
             body: JSON.stringify(values),
-            headers: {"Content-Type": "application/json"},
+            headers: { "Content-Type": "application/json" },
         })
-            .then(res => {
-                if (res.status === 500) throw new Error(`No related entity found with ID: ${values[idField] || "unknown"}`);
-                return res.json();
+            .then((res) => {
+                if (res.status === 500) {
+                    throw new Error(`No related entity found with IDs: ${idDisplay}`)
+                }
+                return res.json()
             })
-            .then(data => {
-                console.log(data);
-                fetchDataAction();
-                setOpen(false);
+            .then((data) => {
+                console.log(data)
+                fetchDataAction()
+                setOpen(false)
             })
-            .catch(err => {
+            .catch((err) => {
                 toast({
                     title: "An error occurred.",
                     description: err.message,
-                    variant: "destructive"
-                });
-            });
+                    variant: "destructive",
+                })
+            })
     }
-
 
     return (
         <Drawer open={open} onOpenChange={setOpen}>
@@ -97,50 +129,16 @@ export function FormCreateAircraftCrew({fetchDataAction, formSchema, link, entit
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                     <DrawerTrigger asChild>
                         <Button variant="outline" size="icon">
-                            <CirclePlus/>
+                            <PencilLine />
                         </Button>
                     </DrawerTrigger>
                     <DrawerContent>
                         <div className="mx-auto w-full max-w-sm mt-2">
                             <DrawerHeader>
-                                <DrawerTitle>Create new {entityName}</DrawerTitle>
-                                <DrawerDescription className="sr-only">Bobens</DrawerDescription>
+                                <DrawerTitle>Update {entityName}</DrawerTitle>
+                                <DrawerDescription className="sr-only">Update details</DrawerDescription>
                             </DrawerHeader>
                             <div className="px-4 flex flex-col gap-2">
-                                <FormField
-                                    control={form.control}
-                                    name="aircraftId" // Typensicherheit durch Zod-Schema
-                                    render={({field}) => (
-                                        <FormItem>
-                                            <FormLabel>AircraftId</FormLabel>
-                                            <FormControl>
-                                                <Input
-                                                    type="number"
-                                                    // 🔥 Null in "" umwandeln
-                                                    onChange={field.onChange}
-                                                />
-                                            </FormControl>
-                                            <FormMessage/>
-                                        </FormItem>
-                                    )}
-                                />
-                                <FormField
-                                    control={form.control}
-                                    name="mercenaryId" // Typensicherheit durch Zod-Schema
-                                    render={({field}) => (
-                                        <FormItem>
-                                            <FormLabel>MercenaryId</FormLabel>
-                                            <FormControl>
-                                                <Input
-                                                    type="number"
-                                                    // 🔥 Null in "" umwandeln
-                                                    onChange={field.onChange}
-                                                />
-                                            </FormControl>
-                                            <FormMessage/>
-                                        </FormItem>
-                                    )}
-                                />
                                 <FormField
                                     control={form.control}
                                     name="JoinedAt" // Typensicherheit durch Zod-Schema
@@ -165,7 +163,10 @@ export function FormCreateAircraftCrew({fetchDataAction, formSchema, link, entit
                                                         <Calendar
                                                             mode="single"
                                                             selected={date}
-                                                            onSelect={setDate}
+                                                            onSelect={(bobens) => {
+                                                                setChangedDate(true)
+                                                                setDate(bobens)
+                                                            }}
                                                             initialFocus
                                                         />
                                                     </PopoverContent>
@@ -187,6 +188,5 @@ export function FormCreateAircraftCrew({fetchDataAction, formSchema, link, entit
                 </form>
             </Form>
         </Drawer>
-
     )
 }
