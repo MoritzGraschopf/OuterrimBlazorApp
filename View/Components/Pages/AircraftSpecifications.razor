@@ -1,8 +1,9 @@
 @page "/AircraftSpecifications"
+@rendermode InteractiveServer
 @using Domain.Interfaces
 @using Model.Entities
 
-@inject IRepository<AircraftSpecification> AirAircraftSpecificationRepository
+@inject IRepository<AircraftSpecification> AircraftSpecificationRepository
 
 <h1>Aircraft Specifications</h1>
 <br>
@@ -15,41 +16,54 @@
     <div class="form-group row my-2">
         <label for="structure_c" class="col-sm-2 col-form-label">Structure</label>
         <div class="col-sm-10">
-            <input type="number" class="form-control" id="structure_c" aria-describedby="structure_c"/>
+            <input type="number" class="form-control" id="structure_c" aria-describedby="structure_c"
+                   @bind-value="_newAircraftSpecification.Structure"/>
         </div>
     </div>
     <div class="form-group row my-2">
         <label for="fueltankcapacity_c" class="col-sm-2 col-form-label">Fuel Tank Capacity</label>
         <div class="col-sm-10">
-            <input type="number" class="form-control" id="fueltankcapacity_c" aria-describedby="fueltankcapacity_c"/>
+            <input type="number" class="form-control" id="fueltankcapacity_c" aria-describedby="fueltankcapacity_c"
+                   @bind-value="_newAircraftSpecification.FuelTankCapacity"/>
         </div>
     </div>
     <div class="form-group row my-2">
         <label for="minspeed_c" class="col-sm-2 col-form-label">Min Speed</label>
         <div class="col-sm-10">
-            <input type="number" class="form-control" id="minspeed_c" aria-describedby="minspeed_c"/>
+            <input type="number" class="form-control" id="minspeed_c" aria-describedby="minspeed_c"
+                   @bind-value="_newAircraftSpecification.MinSpeed"/>
         </div>
     </div>
     <div class="form-group row my-2">
         <label for="maxspeed_c" class="col-sm-2 col-form-label">Max Speed</label>
         <div class="col-sm-10">
-            <input type="number" class="form-control" id="maxspeed_c" aria-describedby="maxspeed_c"/>
+            <input type="number" class="form-control" id="maxspeed_c" aria-describedby="maxspeed_c"
+                   @bind-value="_newAircraftSpecification.MaxSpeed"/>
         </div>
     </div>
     <div class="form-group row my-2">
         <label for="maxaltitude_c" class="col-sm-2 col-form-label">Max Altitude</label>
         <div class="col-sm-10">
-            <input type="number" class="form-control" id="maxaltitude_c" aria-describedby="maxaltitude_c"/>
+            <input type="number" class="form-control" id="maxaltitude_c" aria-describedby="maxaltitude_c"
+                   @bind-value="_newAircraftSpecification.MaxAltitude"/>
         </div>
     </div>
     <div class="form-group row my-2">
         <label for="specificationcode_c" class="col-sm-2 col-form-label">Specification Code</label>
         <div class="col-sm-10">
-            <input type="text" class="form-control" id="specificationcode_c" aria-describedby="specificationcode_c"/>
+            <input type="text" class="form-control" id="specificationcode_c" aria-describedby="specificationcode_c"
+                   @bind-value="_newAircraftSpecification.SpecificationCode"/>
         </div>
     </div>
-    <button type="submit" class="btn btn-primary mt-2">Submit</button>
 </form>
+<button type="submit" class="btn btn-primary mt-2" @onclick="async () => await AddAircraftSpecification()">Submit
+</button>
+@if (_createError != "")
+{
+    <div class="alert alert-danger my-2" role="alert">
+        @_createError
+    </div>
+}
 
 <hr>
 
@@ -93,47 +107,60 @@
     <div class="form-group row my-2">
         <label for="id_u" class="col-sm-2 col-form-label">Id</label>
         <div class="col-sm-10">
-            <input type="number" class="form-control" id="id_u" aria-describedby="id_u"/>
+            <input type="number" class="form-control" id="id_u" aria-describedby="id_u"
+                   @bind-value="_updateId"/>
         </div>
     </div>
     <div class="form-group row my-2">
         <label for="structure_u" class="col-sm-2 col-form-label">Structure</label>
         <div class="col-sm-10">
-            <input type="number" class="form-control" id="structure_u" aria-describedby="structure_u"/>
+            <input type="number" class="form-control" id="structure_u" aria-describedby="structure_u"
+                   @bind-value="_newUpdateAircraftSpecification.Structure"/>
         </div>
     </div>
     <div class="form-group row my-2">
         <label for="fueltankcapacity_u" class="col-sm-2 col-form-label">Fuel Tank Capacity</label>
         <div class="col-sm-10">
-            <input type="number" class="form-control" id="fueltankcapacity_u" aria-describedby="fueltankcapacity_u"/>
+            <input type="number" class="form-control" id="fueltankcapacity_u" aria-describedby="fueltankcapacity_u"
+                   @bind-value="_newUpdateAircraftSpecification.FuelTankCapacity"/>
         </div>
     </div>
     <div class="form-group row my-2">
         <label for="minspeed_u" class="col-sm-2 col-form-label">Min Speed</label>
         <div class="col-sm-10">
-            <input type="number" class="form-control" id="minspeed_u" aria-describedby="minspeed_u"/>
+            <input type="number" class="form-control" id="minspeed_u" aria-describedby="minspeed_u"
+                   @bind-value="_newUpdateAircraftSpecification.MinSpeed"/>
         </div>
     </div>
     <div class="form-group row my-2">
         <label for="maxspeed_u" class="col-sm-2 col-form-label">Max Speed</label>
         <div class="col-sm-10">
-            <input type="number" class="form-control" id="maxspeed_u" aria-describedby="maxspeed_u"/>
+            <input type="number" class="form-control" id="maxspeed_u" aria-describedby="maxspeed_u"
+                   @bind-value="_newUpdateAircraftSpecification.MaxSpeed"/>
         </div>
     </div>
     <div class="form-group row my-2">
         <label for="maxaltitude_u" class="col-sm-2 col-form-label">Max Altitude</label>
         <div class="col-sm-10">
-            <input type="number" class="form-control" id="maxaltitude_u" aria-describedby="maxaltitude_u"/>
+            <input type="number" class="form-control" id="maxaltitude_u" aria-describedby="maxaltitude_u"
+                   @bind-value="_newUpdateAircraftSpecification.MaxAltitude"/>
         </div>
     </div>
     <div class="form-group row my-2">
         <label for="specificationcode_u" class="col-sm-2 col-form-label">Specification Code</label>
         <div class="col-sm-10">
-            <input type="text" class="form-control" id="specificationcode_u" aria-describedby="specificationcode_u"/>
+            <input type="text" class="form-control" id="specificationcode_u" aria-describedby="specificationcode_u"
+                   @bind-value="_newUpdateAircraftSpecification.SpecificationCode"/>
         </div>
     </div>
-    <button type="submit" class="btn btn-primary mt-2">Submit</button>
 </form>
+<button type="submit" class="btn btn-primary mt-2" @onclick="async () => await UpdateAircraftSpecification()">Submit</button>
+@if (_updateError != "")
+{
+    <div class="alert alert-danger my-2" role="alert">
+        @_updateError
+    </div>
+}
 
 <hr>
 
@@ -143,19 +170,89 @@
     <div class="form-group row my-2">
         <label for="id_d" class="col-sm-2 col-form-label">Id</label>
         <div class="col-sm-10">
-            <input type="number" class="form-control" id="id_d" aria-describedby="id_d"/>
+            <input type="number" class="form-control" id="id_d" aria-describedby="id_d" @bind-value="_deleteId"/>
         </div>
     </div>
-    <button type="submit" class="btn btn-primary mt-2">Submit</button>
 </form>
+<button type="submit" class="btn btn-primary mt-2" @onclick="async () => await DeleteAircraftSpecification()">Submit</button>
+@if (_deleteError != "")
+{
+    <div class="alert alert-danger my-2" role="alert">
+        @_deleteError
+    </div>
+}
 
 @code {
-
     private List<AircraftSpecification>? AircraftSpecificationsList { get; set; }
 
-    protected override async void OnInitialized()
+    private AircraftSpecification _newAircraftSpecification = new AircraftSpecification();
+    private string _createError = "";
+
+    private int _updateId = 0;
+    private AircraftSpecification _newUpdateAircraftSpecification = new AircraftSpecification();
+    private string _updateError = "";
+
+    private int _deleteId = 0;
+    private string _deleteError = "";
+
+    protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-        AircraftSpecificationsList = await AirAircraftSpecificationRepository.ReadAllAsync();
+        AircraftSpecificationsList = await AircraftSpecificationRepository.ReadAllAsync();
+    }
+
+    private async Task AddAircraftSpecification()
+    {
+        try
+        {
+            if (_newAircraftSpecification.SpecificationCode == "") throw new Exception("Specification Code cannot be empty");
+            await AircraftSpecificationRepository.CreateAsync(_newAircraftSpecification);
+            AircraftSpecificationsList = await AircraftSpecificationRepository.ReadAllAsync(); // Liste aktualisieren
+            _newAircraftSpecification = new AircraftSpecification(); // Formular zurücksetzen
+            _createError = "";
+        }
+        catch (Exception ex)
+        {
+            _createError = ex.Message;
+        }
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task UpdateAircraftSpecification()
+    {
+        try
+        {
+            if (_newUpdateAircraftSpecification.SpecificationCode == "") throw new Exception("Specification Code cannot be empty");
+            _newUpdateAircraftSpecification.Id = _updateId;
+            await AircraftSpecificationRepository.UpdateAsync(_updateId, _newUpdateAircraftSpecification);
+            AircraftSpecificationsList = await AircraftSpecificationRepository.ReadAllAsync(); // Liste aktualisieren
+            _newUpdateAircraftSpecification = new AircraftSpecification(); // Formular zurücksetzen
+            _updateId = 0;
+            _updateError = "";
+        }
+        catch (Exception ex)
+        {
+            _updateError = ex.Message;
+        }
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task DeleteAircraftSpecification()
+    {
+        try
+        {
+            await AircraftSpecificationRepository.DeleteAsync(_deleteId);
+            AircraftSpecificationsList = await AircraftSpecificationRepository.ReadAllAsync();
+            _deleteId = 0;
+            _deleteError = "";
+        }
+        catch (Exception e)
+        {
+            _deleteError = e.Message;
+        }
+
+        await InvokeAsync(StateHasChanged);
     }
 }

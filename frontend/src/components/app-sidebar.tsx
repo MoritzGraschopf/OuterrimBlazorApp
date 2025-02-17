@@ -10,7 +10,7 @@ import {
     SidebarRail,
 } from "@/components/ui/sidebar"
 import Link from "next/link";
-import {BookOpenIcon, HouseIcon, PackagePlusIcon, PackageX, Upload} from "lucide-react";
+import {BookOpenIcon, HouseIcon, Upload} from "lucide-react";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 
 // This is sample data.
@@ -22,19 +22,9 @@ const data = {
             icon: HouseIcon
         },
         {
-            title: "Create",
-            url: "/create",
-            icon: PackagePlusIcon
-        },
-        {
-            title: "Read",
-            url: "/read",
+            title: "Overview",
+            url: "/overview",
             icon: BookOpenIcon
-        },
-        {
-            title: "Update",
-            url: "/update",
-            icon: Upload
         },
     ]
 }
