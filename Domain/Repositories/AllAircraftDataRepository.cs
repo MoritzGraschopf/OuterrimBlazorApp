@@ -15,7 +15,15 @@ public class AllAircraftDataRepository(OuterRimContext context) : IAllAircraftDa
         if (aircraft == null) return null;
         newData.Aircraft = aircraft;
 
-        newData.Compartment = await context.Set<Compartment>().Where(c => c.AircraftId == aircraft.Id).ToListAsync();
+        newData.Compartments = await context.Set<Compartment>().Where(c => c.AircraftId == aircraft.Id).ToListAsync();
+
+        var compartmentIds = newData.Compartments.Select(c => c.Id).ToList();
+
+        newData.Machineries = await context.Set<Machinery>()
+            .Where(m => compartmentIds.Contains(m.CompartmentId))
+            .ToListAsync();
+
+        newData.Spec = await context.Set<AircraftSpecification>().FindAsync(aircraft.SpecificationId);
 
         return newData;
     }
@@ -32,6 +40,12 @@ public class AllAircraftDataRepository(OuterRimContext context) : IAllAircraftDa
 
     public async Task<List<AllAircraftData>> ReadAllAsync()
     {
-        throw new NotImplementedException();
+        var allAircrafts = await context.Set<Aircraft>().ToListAsync();
+        var allAircraftsData = new List<AllAircraftData>();
+        foreach (var aircraft in allAircrafts)
+        {
+            allAircraftsData.Add((await ReadAsync(aircraft.Id))!);
+        }
+        return allAircraftsData;
     }
 }

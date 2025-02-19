@@ -1,0 +1,21 @@
+﻿@using Model.Entities
+
+
+
+@code {
+    [Parameter] public required AllAircraftData AllAircraftData { get; set; }
+    Aircraft? _aircraft;
+    List<Compartment> _compartments = [];
+    List<Machinery> _machineries = [];
+    AircraftSpecification? _spec;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        _aircraft = AllAircraftData.Aircraft;
+        _compartments = AllAircraftData.Compartments;
+        _machineries = AllAircraftData.Machineries;
+        _spec = AllAircraftData.Spec;
+    }
+}

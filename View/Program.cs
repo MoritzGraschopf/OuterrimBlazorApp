@@ -30,6 +30,7 @@ builder.Services.AddScoped<IRepository<CrimeSyndicate>, CrimeSyndicatesRepositor
 builder.Services.AddScoped<IRepository<Machinery>, MachineriesRepository>();
 builder.Services.AddScoped<IRepository<Mercenary>, MercenariesRepository>();
 builder.Services.AddScoped<IRepository<MercenaryReputation>, MercenaryReputationsRepository>();
+builder.Services.AddScoped<IAllAircraftDataRepository, AllAircraftDataRepository>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

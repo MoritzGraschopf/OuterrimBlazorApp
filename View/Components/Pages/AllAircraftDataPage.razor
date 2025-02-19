@@ -1,0 +1,66 @@
+﻿@page "/AllAircraftDataPage"
+@using Domain.Interfaces
+@using Model.Entities
+@rendermode InteractiveServer
+@inject IAllAircraftDataRepository Repo
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        @if (_selectedAircraft != null)
+        {
+            <li class="breadcrumb-item"><a @onclick="async () => await DeSelect()" href="javascript:void(0)">All Aircraft Data</a></li>
+            <li class="breadcrumb-item active" aria-current="page">@_selectedAircraft.Aircraft.Name</li>
+        }
+        else
+        {
+            <li class="breadcrumb-item active" aria-current="page">All Aircraft Data</li>
+        }
+    </ol>
+</nav>
+
+<form class="row g-3" style="align-items: center" @onsubmit="async () => await Submit()">
+    <div class="col-auto">
+        <label for="selectAircraft" class="form-label">Aircraft: </label>
+    </div>
+    <div class="col-auto">
+        <select id="selectAircraft" class="form-select" aria-label="Default select example" @bind="_selectedId">
+            @foreach (var item in _allAircraftDataList)
+            {
+                <option value="@item.Aircraft.Id">@item.Aircraft.Name</option>
+            }
+        </select>
+    </div>
+    <div class="col-auto">
+        <input type="submit" class="btn btn-primary" value="Select"/>
+    </div>
+</form>
+
+@if (_selectedAircraft != null)
+{
+    <AllAircraftDataComponent AllAircraftData="_selectedAircraft"/>
+}
+
+
+@code {
+    List<AllAircraftData> _allAircraftDataList = [];
+    int _selectedId = 1;
+    AllAircraftData? _selectedAircraft = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        _allAircraftDataList = await Repo.ReadAllAsync();
+    }
+
+    async Task Submit()
+    {
+        _selectedAircraft = _allAircraftDataList.FirstOrDefault(a => a.Aircraft.Id == _selectedId);
+        await InvokeAsync(StateHasChanged);
+    }
+
+    async Task DeSelect()
+    {
+        _selectedAircraft = null;
+        await InvokeAsync(StateHasChanged);
+    }
+}
