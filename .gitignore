@@ -8,3 +8,4 @@ View/OuterRim.db-shm
 View/OuterRim.db-wal
 View/OuterRim.db
 View/Migrations
+script.sql
