@@ -15,8 +15,15 @@ public class AllAircraftDataRepository(OuterRimContext context) : IAllAircraftDa
         if (aircraft == null) return null;
         newData.Aircraft = aircraft;
 
-        newData.Compartment = await context.Set<Compartment>().Where(c => c.AircraftId == aircraft.Id).ToListAsync();
+        newData.Compartments = await context.Set<Compartment>().Where(c => c.AircraftId == aircraft.Id).ToListAsync();
 
+        foreach (var compartment in newData.Compartments)
+        {
+            var machineriesForCompartment = await context.Machineries.Where(m => m.CompartmentId == compartment.Id).ToListAsync();
+            newData.Machineries.AddRange(machineriesForCompartment);
+        }
+
+        newData.Spec = await context.AircraftSpecifications.FindAsync(aircraft.SpecificationId);
         return newData;
     }
 

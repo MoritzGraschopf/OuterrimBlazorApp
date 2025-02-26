@@ -7,7 +7,7 @@ public class OuterRimContext(DbContextOptions<OuterRimContext> options) : DbCont
 {
     public DbSet<Aircraft> Aircrafts { get; set; }
     public DbSet<AircraftCrew> AircraftCrews { get; set; }
-    public DbSet<AircraftSpecification> AircraftSpezifications { get; set; }
+    public DbSet<AircraftSpecification> AircraftSpecifications { get; set; }
     public DbSet<Compartment> Compartments { get; set; }
     public DbSet<CrimeSyndicate> CrimeSyndicates { get; set; }
     public DbSet<EnergySystem> EnergySystems { get; set; }
